@@ -1,0 +1,30 @@
+[31-Jul-2025 01:38:18 UTC] PHP Fatal error:  During inheritance of ArrayAccess: Uncaught ErrorException: Return type of Illuminate\Support\Collection::offsetExists($key) should either be compatible with ArrayAccess::offsetExists(mixed $offset): bool, or the #[\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Support/Collection.php:1277
+Stack trace:
+#0 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Support/Collection.php(11): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError()
+#1 /home/intepkvx/kpoint.intelliccloud.site/vendor/composer/ClassLoader.php(444): include('/home/intepkvx/...')
+#2 /home/intepkvx/kpoint.intelliccloud.site/vendor/composer/ClassLoader.php(322): Composer\Autoload\includeFile()
+#3 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Support/helpers.php(109): Composer\Autoload\ClassLoader->loadClass()
+#4 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Foundation/PackageManifest.php(80): collect()
+#5 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/RegisterFacades.php(26): Illuminate\Foundation\PackageManifest->aliases()
+#6 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(211): Illuminate\Foundation\Bootstrap\RegisterFacades->bootstrap()
+#7 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(320): Illuminate\Foundation\Application->bootstrapWith()
+#8 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(129): Illuminate\Foundation\Console\Kernel->bootstrap()
+#9 /home/intepkvx/kpoint.intelliccloud.site/artisan(35): Illuminate\Foundation\Console\Kernel->handle()
+#10 {main} in /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Support/Collection.php on line 11
+[31-Jul-2025 01:38:18 UTC] PHP Fatal error:  Uncaught ErrorException: Method ReflectionParameter::getClass() is deprecated in /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Container/Container.php:871
+Stack trace:
+#0 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Container/Container.php(871): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError()
+#1 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Container/Container.php(834): Illuminate\Container\Container->resolveDependencies()
+#2 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Container/Container.php(681): Illuminate\Container\Container->build()
+#3 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Container/Container.php(264): Illuminate\Container\Container->resolve()
+#4 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate\Container\Container->Illuminate\Container\{closure}()
+#5 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Container/Container.php(681): Illuminate\Container\Container->build()
+#6 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Container/Container.php(629): Illuminate\Container\Container->resolve()
+#7 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(768): Illuminate\Container\Container->make()
+#8 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(170): Illuminate\Foundation\Application->make()
+#9 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(112): Illuminate\Foundation\Bootstrap\HandleExceptions->getExceptionHandler()
+#10 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(98): Illuminate\Foundation\Bootstrap\HandleExceptions->renderForConsole()
+#11 /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(134): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#12 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->handleShutdown()
+#13 {main}
+  thrown in /home/intepkvx/kpoint.intelliccloud.site/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 871
