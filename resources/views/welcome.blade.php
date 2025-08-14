@@ -707,14 +707,14 @@
                     <div class="icon d-block"><i class="bi bi-telephone"></i></div><span> <span class="d-block">Phone</span><strong>+234 3343254224</strong></span>
                   </div>
                   <div class="d-flex align-items-start gap-3" data-aos="fade-up" data-aos-delay="100">
-                    <div class="icon d-block"><i class="bi bi-send"></i></div><span> <span class="d-block">Email</span><strong>info@kpoint.online</strong></span>
+                    <div class="icon d-block"><i class="bi bi-send"></i></div><span> <span class="d-block">Email</span><strong>kpointsavings@gmail.com</strong></span>
                   </div>
-                  <div class="d-flex align-items-start gap-3" data-aos="fade-up" data-aos-delay="200">
-                    <div class="icon d-block"><i class="bi bi-geo-alt"></i></div><span> <span class="d-block">Address</span>
-                      <address class="fw-bold">369 pine st 527
-san francisco,
-CA 94104, USA</address></span>
-                  </div>
+<!--                  <div class="d-flex align-items-start gap-3" data-aos="fade-up" data-aos-delay="200">-->
+<!--                    <div class="icon d-block"><i class="bi bi-geo-alt"></i></div><span> <span class="d-block">Address</span>-->
+<!--                      <address class="fw-bold">369 pine st 527-->
+<!--san francisco,-->
+<!--CA 94104, USA</address></span>-->
+<!--                  </div>-->
                 </div>
               </div>
               <div class="col-md-6">
@@ -800,7 +800,7 @@ CA 94104, USA</address></span>
                 </p>
                 <a class="d-flex mb-3" href="mailto:groups@kpoint.com">
                   <i class="bi bi-envelope-fill me-3"></i>
-                  <span>info@kpoint.online</span>
+                  <span>kpointsavings@gmail.com</span>
                 </a>
                 <a class="d-flex mb-3" href="tel:+2348005551234">
                   <i class="bi bi-telephone-fill me-3"></i>

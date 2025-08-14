@@ -78,7 +78,7 @@
                    <li class="nav-item">
                     <a href="{{ route('userend.contactUsnew') }}" class="nav-link {{ Request::is('userend/contact-us') ? 'active' : '' }}">
                         <i class="fa fa-phone nav-icon"></i>
-                        <span class="item-name">Contact User</span>
+                        <span class="item-name">Contact</span>
                     </a>
                 </li>
                 {{-- <li class="nav-item">

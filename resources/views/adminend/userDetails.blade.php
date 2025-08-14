@@ -13,10 +13,10 @@
                 </div>
                 <div class="card-body text-center">
                     <div class="mb-3">
-                        <img src="{{ $user->image ? asset('public/Images/Users/' . $user->image) : asset('public/Images/Users/default.jpeg') }}" 
+                        <img src="{{ $user->profile_pix ? asset('public/Images/ProfilePics/' . $user->profile_pix) : asset('public/Images/Users/default.jpeg') }}" 
                              class="rounded-circle" width="120" height="120" alt="User Image">
                     </div>
-                    <h5 class="card-title">{{ $user->name }}</h5>
+                    <h5 class="card-title">{{ $user->name }} iiu</h5>
                     <p class="text-muted">{{ $user->username }}</p>
                     <div class="row text-start">
                         <div class="col-6">
@@ -46,6 +46,7 @@
                                <p> User Signature</p>
                                
                                   <p><img src="/public/Images/Signatures/{{ $user->signature??'' }}" width="120" hieght="120"></p>
+                                  
                         </div>
                     </div>
                 </div>

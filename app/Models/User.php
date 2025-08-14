@@ -33,7 +33,8 @@ class User extends Authenticatable
         'nok_relationship',
         'password',
         'rep_id',
-        'signature'
+        'signature',
+         'profile_pix'
     ];
 
     /**

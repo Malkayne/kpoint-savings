@@ -21,8 +21,8 @@
                             <h4 class="card-title">Profile Picture</h4>
                         </div>
                         <div class="card-body text-center">
-                            @if($user->image)
-                                <img src="{{ asset('storage/' . $user->image) }}" 
+                            @if($user->profile_pix)
+                                <img src="{{  asset('public/Images/ProfilePics/' .$user->profile_pix) }}" 
                                      alt="Profile Picture" 
                                      class="rounded-circle mb-3" 
                                      style="width: 150px; height: 150px; object-fit: cover;">

@@ -692,6 +692,22 @@ public function deleteUser( User $user
             'contributed_on' => $date->format('Y-m-d'),
             'description' => $request->description,
         ]);
+        
+         // update wallet table
+        $user = $plan->user;
+        $user->wallet_balance += $request->amount;
+        $user->save();
+        // update transaction table
+        Transaction::create([
+            'user_id' => $user->id,
+            'rep_id' => $repId,
+            'plan_id' => $plan->id,
+            'wallet_type' => 'user',
+            'type' => 'credit',
+            'amount' => $request->amount,
+            'description' => $request->description ?: 'Contribution for plan: '.$plan->title,
+        ]);
+        
         // Optionally update plan status if completed
         if ($plan->contributions()->count() >= $plan->duration) {
             $plan->status = 'completed';

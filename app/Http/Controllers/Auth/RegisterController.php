@@ -62,7 +62,8 @@ class RegisterController extends Controller
             'nok_relationship' => 'required|string|max:50',
             'password' => 'required|string|confirmed',
             'rep_id' => 'required|integer|exists:reps,id',
-            'signature' => 'file'
+            'signature' => 'required|file',
+            'profile_pix' => 'required|file'
         ]);
 
         // die('Registration is currently disabled. lollllllllll');
@@ -72,17 +73,30 @@ class RegisterController extends Controller
         
             $upload_dir = 'public/Images/Signatures/';
 
-     $file = $request->file('signature');
+            $file = $request->file('signature');
 
-     if($file){
-         $imgTmp = $file->getClientOriginalName();
-  
-      $imgExt = $file->getClientOriginalExtension();
+             if($file){
+                 $imgTmp = $file->getClientOriginalName();
+          
+              $imgExt = $file->getClientOriginalExtension();
+        
+              $image_link = time().'_'.rand(1000,9999).'.'.$imgExt;
+        
+                  $file->move($upload_dir,$image_link);
+             }
 
-      $image_link = time().'_'.rand(1000,9999).'.'.$imgExt;
 
-          $file->move($upload_dir,$image_link);
-     }
+            $upload_dir_profile = 'public/Images/ProfilePics/';
+            
+            $profileFile = $request->file('profile_pix');
+            
+            if ($profileFile) {
+                $profileOriginalName = $profileFile->getClientOriginalName();
+                $profileExt = $profileFile->getClientOriginalExtension();
+                $profileImageName = time() . '_' . rand(1000, 9999) . '.' . $profileExt;
+            
+                $profileFile->move($upload_dir_profile, $profileImageName);
+            }
 
         $userData = [
             'name' => $request->name,
@@ -102,7 +116,8 @@ class RegisterController extends Controller
             'nok_relationship' => $request->nok_relationship,
             'password' => Hash::make($request->password),
             'rep_id' => $request->rep_id,
-            'signature' => $image_link
+            'signature' => $image_link,
+            'profile_pix'  => $profileImageName
         ];
 
         $user = User::create($userData);

@@ -8,9 +8,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+Route::any('{any}', function () {
+    return redirect()->route('countdown');
+})->where('any', '^(?!count-down).*');
+
 Route::get('/count-down', function () {
     return view('countdown');
-});
+})->name('countdown');
 
 Route::redirect('/home', '/')->name('home');
 Route::redirect('/user', '/login');

@@ -124,11 +124,23 @@
             </div>
             
             
-            <div class="col-md-12 mb-3">
+            <div class="col-md-6 mb-3">
               <div class="form-group">
                 <input id="signature" type="file" class="form-control form-control-lg form-control-a @error('signature') is-invalid @enderror" placeholder="Your Signature" name="signature" value="{{ old('signature') }}" required autocomplete="signature">
                                 <small class="text-left text-info">snap and upload your signature</small>
                 @error('address')
+                <span class="invalid-feedback" role="alert">
+                  <strong>{{ $message }}</strong>
+                </span>
+                @enderror
+              </div>
+            </div>
+            
+             <div class="col-md-6 mb-3">
+              <div class="form-group">
+                <input id="profile_pix" type="file" class="form-control form-control-lg form-control-a @error('profile_pix') is-invalid @enderror" placeholder="Your profile picture" name="profile_pix" value="{{ old('profile_pix') }}" required autocomplete="profile_pix">
+                                <small class="text-left text-info">upload your recent photo</small>
+                @error('profile_pix')
                 <span class="invalid-feedback" role="alert">
                   <strong>{{ $message }}</strong>
                 </span>
