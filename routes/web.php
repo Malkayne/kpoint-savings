@@ -4,20 +4,27 @@ use Illuminate\Support\Facades\Auth;
 
 
 Auth::routes();
-Route::get('/', function () {
+
+Route::get('/home', function () {
     return view('welcome');
 });
 
+Route::redirect('/', '/launch')->name('home');
 
-Route::any('{any}', function () {
-    return redirect()->route('countdown');
-})->where('any', '^(?!count-down).*');
+
+// Route::any('{any}', function () {
+//     return redirect()->route('countdown');
+// })->where('any', '^(?!count-down).*');
 
 Route::get('/count-down', function () {
     return view('countdown');
 })->name('countdown');
 
-Route::redirect('/home', '/')->name('home');
+Route::get('/launch', function () {
+    return view('launch');
+})->name('launch');
+
+// Route::redirect('/home', '/')->name('home');
 Route::redirect('/user', '/login');
 Route::redirect('/rep', '/rep/login');
 Route::redirect('/admin','/admin/login');

@@ -6,6 +6,32 @@
  * @package  Laravel
  * @author   Taylor Otwell <taylor@laravel.com>
  */
+ 
+ // Force redirect before Laravel boots
+$requestUri = $_SERVER['REQUEST_URI'] ?? '/';
+
+// Allow /count-down and assets to load normally
+// if ($requestUri !== '/count-down' && !preg_match('#\.(css|js|png|jpg|jpeg|gif|svg|ico)$#', $requestUri)) {
+//     header('Location: /count-down', true, 302);
+//     exit();
+//      }
+
+// Fixed launch date
+// $launchDate = new DateTime("2025-09-01");
+// $today = new DateTime();
+
+// if ($today < $launchDate) {
+//     $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+
+//     if (
+//         $requestUri !== '/count-down' &&
+//         $requestUri !== '/launch' && // allow /launch too
+//         !preg_match('#\.(css|js|png|jpg|jpeg|gif|svg|ico)$#', $requestUri)
+//     ) {
+//         header('Location: /count-down', true, 302);
+//         exit();
+//     }
+// }
 
 define('LARAVEL_START', microtime(true));
 

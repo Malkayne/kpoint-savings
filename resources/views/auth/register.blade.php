@@ -152,7 +152,7 @@
 
             <div class="col-md-6 mb-3">
               <div class="form-group">
-                <input id="email" type="email" class="form-control form-control-lg form-control-a @error('email') is-invalid @enderror" placeholder="Your Email (optional)" name="email" value="{{ old('email') }}" autocomplete="email" required>
+                <input id="email" type="email" class="form-control form-control-lg form-control-a @error('email') is-invalid @enderror" placeholder="Your Email (optional)" name="email" value="{{ old('email') }}" autocomplete="email" >
                 <!--<small class="text-left text-info">Email Address (optional)</small>-->
                 @error('email')
                 <span class="invalid-feedback" role="alert">
