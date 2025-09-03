@@ -671,49 +671,83 @@ public function deleteUser( User $user
         $repId = Auth::guard('rep')->id();
         if ($plan->rep_id !== $repId || $plan->status !== 'active') abort(403, 'Unauthorized action.');
         $request->validate([
-            'contributed_on' => 'required|date',
+            'contributed_on' => 'required|array',
+            'contributed_on.*' => 'required|date',
             'amount' => 'required|numeric|min:1',
             'description' => 'nullable|string',
         ]);
-        // Only allow if that day is in the plan range and not already contributed
+        
         $start = $plan->start_date ? \Carbon\Carbon::parse($plan->start_date) : null;
         $end = $start ? $start->copy()->addDays($plan->duration - 1) : null;
-        $date = \Carbon\Carbon::parse($request->contributed_on);
-        if (!$start || $date->lt($start) || $date->gt($end)) {
-            return redirect()->back()->with('error', 'Invalid date for this plan.');
-        }
-        $exists = $plan->contributions()->whereDate('contributed_on', $date->format('Y-m-d'))->exists();
-        if ($exists) {
-            return redirect()->back()->with('error', 'Contribution for this date already exists.');
-        }
-        Contribution::create([
-            'plan_id' => $plan->id,
-            'amount' => $request->amount,
-            'contributed_on' => $date->format('Y-m-d'),
-            'description' => $request->description,
-        ]);
-        
-         // update wallet table
         $user = $plan->user;
-        $user->wallet_balance += $request->amount;
-        $user->save();
-        // update transaction table
-        Transaction::create([
-            'user_id' => $user->id,
-            'rep_id' => $repId,
-            'plan_id' => $plan->id,
-            'wallet_type' => 'user',
-            'type' => 'credit',
-            'amount' => $request->amount,
-            'description' => $request->description ?: 'Contribution for plan: '.$plan->title,
-        ]);
+        $totalAmount = 0;
+        $successCount = 0;
+        $errors = [];
         
-        // Optionally update plan status if completed
-        if ($plan->contributions()->count() >= $plan->duration) {
-            $plan->status = 'completed';
-            $plan->save();
+        // Loop through each selected date
+        foreach ($request->contributed_on as $dateString) {
+            $date = \Carbon\Carbon::parse($dateString);
+            
+            // Validate date is within plan range
+            if (!$start || $date->lt($start) || $date->gt($end)) {
+                $errors[] = "Invalid date {$dateString} for this plan.";
+                continue;
+            }
+            
+            // Check if contribution already exists for this date
+            $exists = $plan->contributions()->whereDate('contributed_on', $date->format('Y-m-d'))->exists();
+            if ($exists) {
+                $errors[] = "Contribution for {$dateString} already exists.";
+                continue;
+            }
+            
+            // Create contribution
+            Contribution::create([
+                'plan_id' => $plan->id,
+                'amount' => $request->amount,
+                'contributed_on' => $date->format('Y-m-d'),
+                'description' => $request->description,
+            ]);
+            
+            $totalAmount += $request->amount;
+            $successCount++;
         }
-        return redirect()->route('rep.planDetails', ['plan' => $plan->id])->with('success', 'Skipped day contribution added successfully.');
+        
+        // Update wallet and create transaction if any contributions were successful
+        if ($successCount > 0) {
+            $user->wallet_balance += $totalAmount;
+            $user->save();
+            
+            // Create transaction record
+            Transaction::create([
+                'user_id' => $user->id,
+                'rep_id' => $repId,
+                'plan_id' => $plan->id,
+                'wallet_type' => 'user',
+                'type' => 'credit',
+                'amount' => $totalAmount,
+                'description' => $request->description ?: "Multiple contributions for plan: {$plan->title}",
+            ]);
+            
+            // Check if plan is completed
+            if ($plan->contributions()->count() >= $plan->duration) {
+                $plan->status = 'completed';
+                $plan->save();
+            }
+        }
+        
+        // Prepare response message
+        if ($successCount > 0 && empty($errors)) {
+            $message = $successCount === 1 ? 
+                'Skipped day contribution added successfully.' : 
+                "Successfully added {$successCount} contributions.";
+            return redirect()->route('rep.planDetails', ['plan' => $plan->id])->with('success', $message);
+        } elseif ($successCount > 0 && !empty($errors)) {
+            $message = "Successfully added {$successCount} contributions. " . implode(' ', $errors);
+            return redirect()->route('rep.planDetails', ['plan' => $plan->id])->with('warning', $message);
+        } else {
+            return redirect()->back()->with('error', implode(' ', $errors));
+        }
     }
 
 }

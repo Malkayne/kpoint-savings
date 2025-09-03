@@ -37,7 +37,7 @@
                 <i class="fa fa-plus"></i> Make Contribution
             </button>
             <button class="btn btn-secondary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#revisitModal">
-                <i class="fa fa-calendar"></i> Revisit Skipped Day
+                <i class="fa fa-calendar"></i> Revisit Skipped Days
             </button>
             @endif
         </div>
@@ -136,7 +136,7 @@
             </div>
             <div class="form-group">
                 <label>Amount</label>
-                <input type="number" name="amount" class="form-control" value="{{ $plan->amount }}" required>
+                <input type="number" name="amount" class="form-control" value="{{ $plan->amount }}" required readonly>
             </div>
             <div class="form-group">
                 <label>Description (optional)</label>
@@ -159,13 +159,13 @@
         @csrf
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="revisitModalLabel">Revisit Skipped Day</h5>
+            <h5 class="modal-title" id="revisitModalLabel">Revisit Skipped Days</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="form-group">
-                <label>Select Skipped Date</label>
-                <select name="contributed_on" class="form-control" required>
+                <label>Select Skipped Dates (Hold Ctrl/Cmd to select multiple)</label>
+                <select name="contributed_on[]" class="form-control" multiple required style="height: 200px;">
                     @php
                         $start = $plan->start_date ? \Carbon\Carbon::parse($plan->start_date) : null;
                         $contribDays = $plan->contributions->pluck('contributed_on')->map(function($date) {
@@ -179,10 +179,11 @@
                         @endif
                     @endfor
                 </select>
+                <small class="form-text text-muted">You can select multiple dates by holding Ctrl (Windows) or Cmd (Mac) while clicking.</small>
             </div>
             <div class="form-group">
                 <label>Amount</label>
-                <input type="number" name="amount" class="form-control" value="{{ $plan->amount }}" required>
+                <input type="number" name="amount" class="form-control" value="{{ $plan->amount }}" required readonly>
             </div>
             <div class="form-group">
                 <label>Description (optional)</label>
@@ -191,10 +192,36 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-primary">Contribute</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">Add Contributions</button>
           </div>
         </div>
     </form>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectElement = document.querySelector('select[name="contributed_on[]"]');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (selectElement && submitBtn) {
+        function updateButtonText() {
+            const selectedCount = selectElement.selectedOptions.length;
+            if (selectedCount === 0) {
+                submitBtn.textContent = 'Add Contributions';
+                submitBtn.disabled = true;
+            } else if (selectedCount === 1) {
+                submitBtn.textContent = 'Add 1 Contribution';
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.textContent = `Add ${selectedCount} Contributions`;
+                submitBtn.disabled = false;
+            }
+        }
+        
+        selectElement.addEventListener('change', updateButtonText);
+        updateButtonText(); // Initial call
+    }
+});
+</script>
 @endsection 
