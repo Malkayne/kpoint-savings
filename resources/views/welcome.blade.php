@@ -704,7 +704,7 @@
               <div class="col-md-6">
                 <div class="d-flex gap-5 flex-column">
                   <div class="d-flex align-items-start gap-3" data-aos="fade-up" data-aos-delay="0">
-                    <div class="icon d-block"><i class="bi bi-telephone"></i></div><span> <span class="d-block">Phone</span><strong>+234 3343254224</strong></span>
+                    <div class="icon d-block"><i class="bi bi-telephone"></i></div><span> <span class="d-block">Phone</span><strong>+234 7073549960</strong></span>
                   </div>
                   <div class="d-flex align-items-start gap-3" data-aos="fade-up" data-aos-delay="100">
                     <div class="icon d-block"><i class="bi bi-send"></i></div><span> <span class="d-block">Email</span><strong>kpointsavings@gmail.com</strong></span>
@@ -804,7 +804,7 @@
                 </a>
                 <a class="d-flex mb-3" href="tel:+2348005551234">
                   <i class="bi bi-telephone-fill me-3"></i>
-                  <span>+234 3343254224</span>
+                  <span>+234 7073549960</span>
                 </a>
               </div>
             </div>
