@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewWithdrawalRequest;
+use App\Mail\NewManualFundingRequest;
 
 
 
@@ -46,7 +49,7 @@ class WithdrawalController extends Controller
                 $signaturePath = null;
             }
         
-            Withdrawal::create([
+                        $withdrawal = Withdrawal::create([
                 'user_id' => Auth::id(),
                 'amount' => $request->amount,
                 'bank_name' => $request->bank_name,
@@ -55,7 +58,15 @@ class WithdrawalController extends Controller
                 'signature_path' => $signaturePath,
                 'status' => 'pending',
             ]);
-        
+
+            // Send email notification to admin
+            try {
+                Mail::to(config('mail.admin_email', 'salawuhamid96@gmail.com'))->send(new NewWithdrawalRequest($withdrawal));
+            } catch (\Exception $e) {
+                // Log error but don't fail the request
+                \Log::error('Failed to send withdrawal notification email: ' . $e->getMessage());
+            }
+
             return redirect()->back()->with('success', 'Withdrawal request submitted successfully.');
         }
         
@@ -90,12 +101,20 @@ public function mfund(Request $request)
     }
 
     // Create manual funding request
-    Manualfund::create([
+    $manualFunding = Manualfund::create([
         'user_id' => Auth::id(),
         'amount' => $request->amount,
         'proof_of_payment' => $proofPath,
         'status' => 'pending',
     ]);
+
+    // Send email notification to admin
+    try {
+        Mail::to(config('mail.admin_email', 'salawuhamid96@gmail.com'))->send(new NewManualFundingRequest($manualFunding));
+    } catch (\Exception $e) {
+        // Log error but don't fail the request
+        \Log::error('Failed to send manual funding notification email: ' . $e->getMessage());
+    }
 
     return redirect()->back()->with('success', 'Manual funding request submitted successfully.');
 }

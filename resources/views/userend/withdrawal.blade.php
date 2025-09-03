@@ -119,6 +119,8 @@
     @endif
 </td>
 
+
+
                                         <td>
                                             <span class="badge {{ $withdrawal->getStatusBadgeClass() }}">
                                                 {{ ucfirst($withdrawal->status) }}
