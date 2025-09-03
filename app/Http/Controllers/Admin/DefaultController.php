@@ -932,20 +932,51 @@ public function deleteUser( User $user
     
     //  WITHDRAWAL REQUEST 
     
-      public function withdrawal()
+    public function withdrawal()
     {
-        $withdrawals = Withdrawal::latest()->get();
+        $withdrawals = Withdrawal::with('user')->latest()->get();
         return view('adminend.withdrawal', compact('withdrawals'));
     }
-     
+    
+    public function updateWithdrawalStatus(Request $request, Withdrawal $withdrawal)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,ongoing,done,reversed,failed'
+        ]);
+        
+        if (!$withdrawal->canUpdateStatus()) {
+            return redirect()->back()->with('error', 'Cannot update status for this withdrawal request.');
+        }
+        
+        $withdrawal->status = $request->status;
+        $withdrawal->save();
+        
+        return redirect()->back()->with('success', 'Withdrawal status updated successfully.');
+    }
      
         
     //  MANUAL FUNDING REQUEST 
     
     public function manualfunding()
     {
-        $manual_fund_requests = Manualfund::latest()->get();
+        $manual_fund_requests = Manualfund::with('user')->latest()->get();
         return view('adminend.Manualfund', compact('manual_fund_requests'));
+    }
+    
+    public function updateManualFundingStatus(Request $request, Manualfund $manualfund)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,ongoing,done,reversed,failed'
+        ]);
+        
+        if (!$manualfund->canUpdateStatus()) {
+            return redirect()->back()->with('error', 'Cannot update status for this manual funding request.');
+        }
+        
+        $manualfund->status = $request->status;
+        $manualfund->save();
+        
+        return redirect()->back()->with('success', 'Manual funding status updated successfully.');
     }
 
 }

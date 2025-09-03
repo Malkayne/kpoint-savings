@@ -120,11 +120,7 @@
 </td>
 
                                         <td>
-                                            <span class="badge 
-                                                @if($withdrawal->status === 'pending') bg-warning
-                                                @elseif($withdrawal->status === 'approved') bg-success
-                                                @else bg-danger
-                                                @endif">
+                                            <span class="badge {{ $withdrawal->getStatusBadgeClass() }}">
                                                 {{ ucfirst($withdrawal->status) }}
                                             </span>
                                         </td>

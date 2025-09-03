@@ -4,6 +4,8 @@
 @section('content-header-description', 'Submit funding request and view status')
 @section('content')
 
+
+
 <div class="container-fluid content-inner mt-n5 py-0">
     <div class="row">
         <div class="col-12">
@@ -37,6 +39,8 @@
                                     <th>Date</th>
                                     <th>Amount</th>
                                     <th>Proof of Payment</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,10 +58,24 @@
                                                 <span class="text-muted">N/A</span>
                                             @endif
                                         </td>
+                                        <td>
+                                            <span class="badge {{ $request->getStatusBadgeClass() }}">
+                                                {{ ucfirst($request->status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if($request->canUpdateStatus())
+                                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#statusModal{{ $request->id }}">
+                                                    Update Status
+                                                </button>
+                                            @else
+                                                <span class="text-muted">Final Status</span>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center text-muted py-4">
+                                        <td colspan="6" class="text-center text-muted py-4">
                                             <i class="fas fa-credit-card fa-2x mb-3"></i>
                                             <p class="mb-0">No funding requests found</p>
                                         </td>
@@ -72,6 +90,42 @@
         </div>
     </div>
 </div>
+
+<!-- Status Update Modals -->
+@foreach($manual_fund_requests as $request)
+<div class="modal fade" id="statusModal{{ $request->id }}" tabindex="-1" aria-labelledby="statusModalLabel{{ $request->id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statusModalLabel{{ $request->id }}">Update Manual Funding Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('admin.updateManualFundingStatus', $request) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="status{{ $request->id }}" class="form-label">Status</label>
+                        <select class="form-select" id="status{{ $request->id }}" name="status" required>
+                            <option value="pending" {{ $request->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="ongoing" {{ $request->status === 'ongoing' ? 'selected' : '' }}>Ongoing</option>
+                            <option value="done" {{ $request->status === 'done' ? 'selected' : '' }}>Done</option>
+                            <option value="reversed" {{ $request->status === 'reversed' ? 'selected' : '' }}>Reversed</option>
+                            <option value="failed" {{ $request->status === 'failed' ? 'selected' : '' }}>Failed</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>Note:</strong> Only transactions with status "pending" or "ongoing" can be updated.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endforeach
 
 <script>
 $(document).ready(function() {

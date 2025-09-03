@@ -325,7 +325,9 @@ Route::group([
     
     //requests
     Route::get('withdrawal','DefaultController@withdrawal')->name('withdrawal');
+    Route::post('withdrawal/{withdrawal}/update-status','DefaultController@updateWithdrawalStatus')->name('updateWithdrawalStatus');
     Route::get('manualfunding','DefaultController@manualfunding')->name('manualfunding');
+    Route::post('manualfunding/{manualfund}/update-status','DefaultController@updateManualFundingStatus')->name('updateManualFundingStatus');
 
     
     // reps

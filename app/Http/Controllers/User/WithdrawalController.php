@@ -94,6 +94,7 @@ public function mfund(Request $request)
         'user_id' => Auth::id(),
         'amount' => $request->amount,
         'proof_of_payment' => $proofPath,
+        'status' => 'pending',
     ]);
 
     return redirect()->back()->with('success', 'Manual funding request submitted successfully.');

@@ -83,6 +83,7 @@
                                     <th>Date</th>
                                     <th>Amount</th>
                                     <th>Proof of Payment</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -99,10 +100,15 @@
                                                 <span class="text-muted">N/A</span>
                                             @endif
                                         </td>
+                                        <td>
+                                            <span class="badge {{ $request->getStatusBadgeClass() }}">
+                                                {{ ucfirst($request->status) }}
+                                            </span>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center text-muted py-4">
+                                        <td colspan="5" class="text-center text-muted py-4">
                                             <i class="fas fa-credit-card fa-2x mb-3"></i>
                                             <p class="mb-0">No funding requests found</p>
                                         </td>
