@@ -895,9 +895,57 @@ public function deleteUser( User $user
       }
 
     // PLANS
-    public function plans(){
-        $plans = \App\Models\ContributionPlan::with(['user', 'rep', 'contributions'])->orderBy('created_at', 'DESC')->get();
-        return view('adminend.plans', ['title' => 'Contribution Plans', 'plans' => $plans]);
+    public function plans(Request $request){
+        $query = \App\Models\ContributionPlan::with(['user', 'rep', 'contributions']);
+        
+        // Filter by status if provided
+        if ($request->has('status') && $request->status) {
+            $query->where('status', $request->status);
+        }
+        
+        $plans = $query->orderBy('created_at', 'DESC')->get();
+        
+        // Group plans by user
+        $groupedPlans = $plans->groupBy('user_id');
+        
+        // Get users with their plan counts and status summary
+        $usersWithPlans = User::where('status', 'active')
+            ->get()
+            ->map(function($user) use ($groupedPlans) {
+                $userPlans = $groupedPlans->get($user->id, collect());
+                $activePlans = $userPlans->where('status', 'active')->count();
+                $completedPlans = $userPlans->where('status', 'completed')->count();
+                $brokenPlans = $userPlans->where('status', 'broken')->count();
+                $totalAmount = $userPlans->sum('amount');
+                $totalContributed = $userPlans->sum(function($plan) {
+                    return $plan->contributions->sum('amount');
+                });
+                
+                return [
+                    'user' => $user,
+                    'plans' => $userPlans,
+                    'plan_counts' => [
+                        'total' => $userPlans->count(),
+                        'active' => $activePlans,
+                        'completed' => $completedPlans,
+                        'broken' => $brokenPlans
+                    ],
+                    'total_amount' => $totalAmount,
+                    'total_contributed' => $totalContributed
+                ];
+            })
+            ->filter(function($userData) {
+                // Only show users who have plans
+                return $userData['plan_counts']['total'] > 0;
+            })
+            ->sortByDesc('plan_counts.total');
+        
+        return view('adminend.plans', [
+            'title' => 'Contribution Plans', 
+            'usersWithPlans' => $usersWithPlans,
+            'plans' => $plans, // Keep for statistics
+            'currentFilter' => $request->status
+        ]);
     }
 
     public function planDetails($plan){ 
