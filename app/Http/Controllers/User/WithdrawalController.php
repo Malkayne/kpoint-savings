@@ -22,7 +22,7 @@ class WithdrawalController extends Controller
          public function store(Request $request)
         {
             $request->validate([
-                'amount' => 'required|numeric|min:1000',
+                'amount' => 'required|numeric|min:100',
                 'bank_name' => 'required|string|max:255',
                 'account_number' => 'required|string|max:20',
                 'account_name' => 'required|string|max:50',
@@ -81,7 +81,7 @@ class WithdrawalController extends Controller
 public function mfund(Request $request)
 {
     $request->validate([
-        'amount' => 'required|numeric|min:1000',
+        'amount' => 'required|numeric|min:100',
         'proof_of_payment' => 'required|file|mimes:jpeg,jpg,png,pdf|max:2048',
     ]);
 

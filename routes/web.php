@@ -16,13 +16,13 @@ Route::get('/', function () {
 //     return redirect()->route('countdown');
 // })->where('any', '^(?!count-down).*');
 
-Route::get('/count-down', function () {
-    return view('countdown');
-})->name('countdown');
+// Route::get('/count-down', function () {
+//     return view('countdown');
+// })->name('countdown');
 
-Route::get('/launch', function () {
-    return view('launch');
-})->name('launch');
+// Route::get('/launch', function () {
+//     return view('launch');
+// })->name('launch');
 
 // Route::redirect('/home', '/')->name('home');
 Route::redirect('/user', '/login');
