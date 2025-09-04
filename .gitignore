@@ -32,20 +32,22 @@ test-smtp.php
 *.test.php
 
 # Upload directories
-/public/withdrawal_signature/*
-/public/manual_funding_proofs/*
-/public/uploads/*
-/public/temp/*
+/public/withdrawal_signature/
+/public/manual_funding_proofs/
+/public/uploads/
+/public/temp/
+/public/public/
 
 # Logs
-/storage/logs/*
+/storage/logs/
 *.log
+error_log
 
 # Cache
-/bootstrap/cache/*
-/storage/framework/cache/*
-/storage/framework/sessions/*
-/storage/framework/views/*
+/bootstrap/cache/
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/framework/views/
 
 # OS generated files
 .DS_Store
@@ -55,6 +57,13 @@ test-smtp.php
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
 
 # Custom
 /tests/Traits/AuthenticatesUsers.php
