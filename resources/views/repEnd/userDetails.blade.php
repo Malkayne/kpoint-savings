@@ -13,8 +13,20 @@
                 </div>
                 <div class="card-body text-center">
                     <div class="mb-3">
-                        <img src="{{ $user->image ? asset('public/Images/Users/' . $user->image) : asset('public/Images/Users/default.jpeg') }}" 
-                             class="rounded-circle" width="120" height="120" alt="User Image">
+                        <img src="{{  asset('public/Images/ProfilePics/' .$user->profile_pix) }}" 
+                             class="rounded-circle" width="120" height="120" alt="User Image" id="userProfileImage">
+                    </div>
+                    <!-- Profile Picture Update Form -->
+                    <div class="mb-3">
+                        <form action="{{ route('rep.updateUserProfilePicture', $user) }}" method="POST" enctype="multipart/form-data" id="profilePictureForm">
+                            @csrf
+                            <div class="input-group">
+                                <input type="file" class="form-control" name="profile_pix" id="profile_pix" accept="image/*" style="display: none;">
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('profile_pix').click()">
+                                    <i class="fa fa-camera"></i> Change Photo
+                                </button>
+                            </div>
+                        </form>
                     </div>
                     <h5 class="card-title">{{ $user->name }}</h5>
                     <p class="text-muted">{{ $user->username }}</p>
@@ -241,4 +253,54 @@
         </div>
     </div>
 </div>
+
+<!-- Success/Error Messages -->
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('profile_pix');
+    const form = document.getElementById('profilePictureForm');
+    const profileImage = document.getElementById('userProfileImage');
+    
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select a valid image file.');
+                return;
+            }
+            
+            // Validate file size (2MB max)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('File size must be less than 2MB.');
+                return;
+            }
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                profileImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            
+            // Auto-submit form
+            form.submit();
+        }
+    });
+});
+</script>
 @endsection 

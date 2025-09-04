@@ -154,7 +154,7 @@
                                     <p>If you need to reach out to us directly, you can use any of the options below:</p>
                                     <ul>
                                         <li><strong>WhatsApp:</strong>
-                                            <a href="https://wa.me/2348166618178" target="_blank">
+                                            <a href="https://wa.me/2347073549960" target="_blank">
                                                 Chat with us on WhatsApp
                                             </a>
                                         </li>

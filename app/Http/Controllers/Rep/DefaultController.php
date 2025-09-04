@@ -120,6 +120,40 @@ class DefaultController extends Controller
       return view('repEnd.userDetails', compact('user', 'contributionPlans', 'transactions'));
     }
 
+    public function updateUserProfilePicture(Request $request, User $user) {
+        // Security check - ensure the user belongs to the current rep
+        if ($user->rep_id !== auth()->guard('rep')->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'profile_pix' => 'required|file|image|max:2048|mimes:jpeg,png,jpg,gif'
+        ]);
+
+        $upload_dir = 'public/Images/ProfilePics/';
+        $file = $request->file('profile_pix');
+
+        if ($file) {
+            // Get file extension
+            $imgExt = $file->getClientOriginalExtension();
+            
+            // Generate unique filename
+            $image_link = time() . '_' . rand(1000, 9999) . '.' . $imgExt;
+            
+            // Move file to upload directory
+            $file->move($upload_dir, $image_link);
+            
+            // Update user's profile picture
+            $user->update([
+                'profile_pix' => $image_link
+            ]);
+
+            return redirect()->route('rep.userDetails', $user)->with('success', 'Profile picture updated successfully.');
+        }
+
+        return redirect()->route('rep.userDetails', $user)->with('error', 'Failed to update profile picture.');
+    }
+
 public function changeUserPassword(User $user){
 
   return view('repEnd.changeUserPassword',['title'=>'Change User Password','userDetails'=>$user]);
@@ -563,8 +597,41 @@ public function deleteUser( User $user
             ->where('rep_id', $repId)
             ->orderBy('created_at', 'DESC')
             ->get();
+        
+        // Group plans by user
+        $groupedPlans = $plans->groupBy('user_id');
+        
+        // Get users with their plan counts and status summary
+        $usersWithPlans = User::where('rep_id', $repId)
+            ->where('status', 'active')
+            ->get()
+            ->map(function($user) use ($groupedPlans) {
+                $userPlans = $groupedPlans->get($user->id, collect());
+                $activePlans = $userPlans->where('status', 'active')->count();
+                $completedPlans = $userPlans->where('status', 'completed')->count();
+                $brokenPlans = $userPlans->where('status', 'broken')->count();
+                $totalAmount = $userPlans->sum('amount');
+                $totalContributed = $userPlans->sum(function($plan) {
+                    return $plan->contributions->sum('amount');
+                });
+                
+                return [
+                    'user' => $user,
+                    'plans' => $userPlans,
+                    'plan_counts' => [
+                        'total' => $userPlans->count(),
+                        'active' => $activePlans,
+                        'completed' => $completedPlans,
+                        'broken' => $brokenPlans
+                    ],
+                    'total_amount' => $totalAmount,
+                    'total_contributed' => $totalContributed
+                ];
+            })
+            ->sortByDesc('plan_counts.total');
+        
         $users = User::where('rep_id', $repId)->where('status', 'active')->get();
-        return view('repEnd.plans', compact('plans', 'users'));
+        return view('repEnd.plans', compact('usersWithPlans', 'users'));
     }
 
     public function createPlan(Request $request) {

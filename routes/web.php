@@ -191,6 +191,7 @@ Route::group([
     Route::get('dashboard','DefaultController@index')->name('dashboard');
     Route::get('users','DefaultController@users')->name('users');
     Route::get('userDetails/{user}', 'DefaultController@userDetails')->name('userDetails');
+    Route::post('userDetails/{user}/update-profile-picture', 'DefaultController@updateUserProfilePicture')->name('updateUserProfilePicture');
     Route::get('plans','DefaultController@plans')->name('plans');
     Route::post('plans/create','DefaultController@createPlan')->name('createPlan');
     Route::put('plans/{plan}','DefaultController@updatePlan')->name('updatePlan');
