@@ -95,9 +95,9 @@
             <div class="w-footer-a">
               <ul class="list-unstyled">
                 <li class="color-a">
-                  <span class="color-text-a">Phone .</span> 081111111111</li>
+                  <span class="color-text-a">Phone .</span> +234 7073549960</li>
                 <li class="color-a">
-                  <span class="color-text-a">Email .</span> support@kpointsavings.com</li>
+                  <span class="color-text-a">Email .</span> kpointsavings@gmail.com</li>
               </ul>
             </div>
           </div>
