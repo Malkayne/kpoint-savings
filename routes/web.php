@@ -340,6 +340,10 @@ Route::group([
     Route::get('plans','DefaultController@plans')->name('plans');
     Route::get('plans/{plan}/details', 'DefaultController@planDetails')->name('planDetails');
     Route::get('breakPlan/{planId}','DefaultController@breakPlan')->name('breakPlan');
+    Route::get('completePlan/{planId}','DefaultController@completePlan')->name('completePlan');
+    Route::get('reactivatePlan/{planId}','DefaultController@reactivatePlan')->name('reactivatePlan');
+    Route::post('updatePlanStatus/{planId}','DefaultController@updatePlanStatus')->name('updatePlanStatus');
+    Route::delete('deletePlan/{planId}','DefaultController@deletePlan')->name('deletePlan');
     
     Route::get('addRep','DefaultController@addRep')->name('addRep');
     Route::post('createRep','DefaultController@createRep')->name('createRep');
