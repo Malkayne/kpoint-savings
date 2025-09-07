@@ -143,6 +143,6 @@ return [
     |
     */
 
-    'admin_email' => env('MAIL_ADMIN_EMAIL', 'admin@kpointsavings.com'),
+    'admin_email' => env('MAIL_ADMIN_EMAIL', 'kpointsavings@gmail.com'),
 
 ];
