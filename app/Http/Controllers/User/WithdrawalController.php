@@ -61,7 +61,7 @@ class WithdrawalController extends Controller
 
             // Send email notification to admin using Laravel Mail
             try {
-                $adminEmail = config('mail.admin_email', 'admin@intellicsolutions.org');
+                $adminEmail = config('mail.admin_email', 'kpointsavings@gmail.com');
                 $user = Auth::user();
                 
                 Mail::to($adminEmail)->send(new NewWithdrawalRequest($withdrawal, $user));
@@ -113,7 +113,7 @@ public function mfund(Request $request)
 
     // Send email notification to admin using Laravel Mail
     try {
-        $adminEmail = config('mail.admin_email', 'admin@intellicsolutions.org');
+        $adminEmail = config('mail.admin_email', 'kpointsavings@gmail.com');
         $user = Auth::user();
         
         Mail::to($adminEmail)->send(new NewManualFundingRequest($manualFunding, $user));
