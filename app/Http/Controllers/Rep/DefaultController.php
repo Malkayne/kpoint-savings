@@ -634,6 +634,28 @@ public function deleteUser( User $user
         return view('repEnd.plans', compact('usersWithPlans', 'users'));
     }
 
+    public function searchUsers(Request $request) {
+        $repId = Auth::guard('rep')->id();
+        $query = $request->get('q', '');
+        
+        $usersQuery = User::where('rep_id', $repId)
+                         ->where('status', 'active');
+        
+        if(!empty($query)){
+            $usersQuery->where(function($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%")
+                  ->orWhere('email', 'LIKE', "%{$query}%")
+                  ->orWhere('username', 'LIKE', "%{$query}%")
+                  ->orWhere('phone', 'LIKE', "%{$query}%");
+            });
+        }
+        
+        $users = $usersQuery->limit(5)
+                           ->get(['id', 'name', 'email', 'username', 'phone']);
+        
+        return response()->json($users);
+    }
+
     public function createPlan(Request $request) {
         $repId = Auth::guard('rep')->id();
         $request->validate([

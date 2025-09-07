@@ -151,6 +151,22 @@ if ($result['http_status'] != 201) {
       return view('managerend.createRep',['title'=>'Create Rep']);
     }
 
+    public function searchUsers(Request $request){
+        $query = $request->get('q', '');
+        
+        if(empty($query)){
+            return response()->json([]);
+        }
+        
+        $users = User::where('name', 'LIKE', "%{$query}%")
+                    ->orWhere('email', 'LIKE', "%{$query}%")
+                    ->orWhere('username', 'LIKE', "%{$query}%")
+                    ->limit(5)
+                    ->get(['id', 'name', 'email', 'username']);
+        
+        return response()->json($users);
+    }
+
     public function createRep(Request $request){
 
       $request->validate([

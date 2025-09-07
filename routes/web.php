@@ -196,6 +196,7 @@ Route::group([
     Route::post('plans/create','DefaultController@createPlan')->name('createPlan');
     Route::put('plans/{plan}','DefaultController@updatePlan')->name('updatePlan');
     Route::delete('plans/{plan}','DefaultController@deletePlan')->name('deletePlan');
+    Route::get('search-users','DefaultController@searchUsers')->name('searchUsers');
     Route::get('plans/{plan}/details','DefaultController@planDetails')->name('planDetails');
     Route::post('plans/{plan}/contribute','DefaultController@makeContribution')->name('makeContribution');
     Route::post('plans/{plan}/revisit','DefaultController@revisitContribution')->name('revisitContribution');
@@ -254,6 +255,7 @@ Route::group([
 
     Route::get('addRep','DefaultController@addRep')->name('addRep');
     Route::post('createRep','DefaultController@createRep')->name('createRep');
+    Route::get('search-users','DefaultController@searchUsers')->name('searchUsers');
 
     Route::get('editProfile/{admin}','DefaultController@editProfile')->name('editProfile');
     Route::put('updateProfile/{adminID}','DefaultController@updateProfile')->name('updateProfile');

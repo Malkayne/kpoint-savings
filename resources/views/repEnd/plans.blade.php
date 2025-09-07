@@ -242,11 +242,14 @@
                   <div class="modal-body">
                     <div class="form-group">
                         <label>User</label>
-                        <select name="user_id" class="form-control" required>
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}" {{ $plan->user_id == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
-                            @endforeach
-                        </select>
+                        <div class="user-search-container">
+                            <input type="text" class="form-control edit-user-search" id="userSearch{{ $plan->id }}" placeholder="Search users by name, email, username, or phone..." autocomplete="off" required>
+                            <div id="userSearchResults{{ $plan->id }}" class="search-results"></div>
+                            <input type="hidden" name="user_id" id="selectedUserId{{ $plan->id }}" value="{{ $plan->user_id }}" required>
+                            <div id="selectedUser{{ $plan->id }}" class="selected-user mt-2">
+                                <span class="badge bg-primary">{{ $plan->user->name }} ({{ $plan->user->email }})</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>Title</label>
@@ -312,11 +315,12 @@
           <div class="modal-body">
             <div class="form-group">
                 <label>User</label>
-                <select name="user_id" class="form-control" required>
-                    @foreach($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                    @endforeach
-                </select>
+                <div class="user-search-container">
+                    <input type="text" class="form-control" id="userSearch" placeholder="Search users by name, email, username, or phone..." autocomplete="off" required>
+                    <div id="userSearchResults" class="search-results"></div>
+                    <input type="hidden" name="user_id" id="selectedUserId" required>
+                    <div id="selectedUser" class="selected-user mt-2" style="display: none;"></div>
+                </div>
             </div>
             <div class="form-group">
                 <label>Title</label>
@@ -343,4 +347,183 @@
     </form>
   </div>
 </div>
-@endsection 
+@endsection
+
+<style>
+.user-search-container {
+    position: relative;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.search-result-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.search-result-item:hover {
+    background-color: #f5f5f5;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.selected-user {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.selected-user .badge {
+    font-size: 12px;
+}
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    let searchTimeout;
+
+    // Load initial users when create modal opens
+    $('#createPlanModal').on('shown.bs.modal', function() {
+        loadInitialUsers('userSearchResults', 'selectedUserId', 'selectedUser');
+    });
+
+    // Load initial users when edit modal opens
+    $(document).on('shown.bs.modal', '.modal', function() {
+        const modalId = $(this).attr('id');
+        if (modalId && modalId.startsWith('editPlanModal')) {
+            const planId = modalId.replace('editPlanModal', '');
+            loadInitialUsers('userSearchResults' + planId, 'selectedUserId' + planId, 'selectedUser' + planId);
+        }
+    });
+
+    // User search functionality for create modal
+    $('#userSearch').on('input', function() {
+        const query = $(this).val();
+        
+        clearTimeout(searchTimeout);
+        
+        searchTimeout = setTimeout(function() {
+            searchUsers(query, 'userSearchResults', 'selectedUserId', 'selectedUser');
+        }, 200);
+    });
+
+    // User search functionality for edit modals
+    $(document).on('input', '.edit-user-search', function() {
+        const query = $(this).val();
+        const modalId = $(this).attr('id').replace('userSearch', '');
+        
+        clearTimeout(searchTimeout);
+        
+        searchTimeout = setTimeout(function() {
+            searchUsers(query, 'userSearchResults' + modalId, 'selectedUserId' + modalId, 'selectedUser' + modalId);
+        }, 200);
+    });
+
+    function loadInitialUsers(resultsId, userIdId, selectedUserId) {
+        searchUsers('', resultsId, userIdId, selectedUserId);
+    }
+
+    function searchUsers(query, resultsId, userIdId, selectedUserId) {
+        $.ajax({
+            url: '{{ route("rep.searchUsers") }}',
+            method: 'GET',
+            data: { q: query },
+            success: function(users) {
+                displaySearchResults(users, resultsId, userIdId, selectedUserId);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error searching users:', error);
+                $('#' + resultsId).html('<div class="search-result-item text-danger">Error loading users</div>').show();
+            }
+        });
+    }
+
+    function displaySearchResults(users, resultsId, userIdId, selectedUserId) {
+        const resultsContainer = $('#' + resultsId);
+        resultsContainer.empty();
+        
+        if (users.length === 0) {
+            resultsContainer.html('<div class="search-result-item">No users found</div>');
+        } else {
+            users.forEach(function(user) {
+                const resultItem = $(`
+                    <div class="search-result-item" data-user-id="${user.id}">
+                        <strong>${user.name}</strong><br>
+                        <small>${user.email} | ${user.username} | ${user.phone || 'No phone'}</small>
+                    </div>
+                `);
+                resultsContainer.append(resultItem);
+            });
+        }
+        
+        resultsContainer.show();
+    }
+
+    // Handle user selection for create modal
+    $(document).on('click', '#userSearchResults .search-result-item', function() {
+        const userId = $(this).data('user-id');
+        const userName = $(this).find('strong').text();
+        const userEmail = $(this).find('small').text().split(' | ')[0];
+        
+        $('#selectedUserId').val(userId);
+        $('#selectedUser').html(`<span class="badge bg-primary">${userName} (${userEmail})</span>`).show();
+        
+        // Clear search and hide results
+        $('#userSearch').val('');
+        $('#userSearchResults').hide();
+    });
+
+    // Handle user selection for edit modals
+    $(document).on('click', '.search-results .search-result-item', function() {
+        const userId = $(this).data('user-id');
+        const userName = $(this).find('strong').text();
+        const userEmail = $(this).find('small').text().split(' | ')[0];
+        const modalId = $(this).closest('.search-results').attr('id').replace('userSearchResults', '');
+        
+        $('#selectedUserId' + modalId).val(userId);
+        $('#selectedUser' + modalId).html(`<span class="badge bg-primary">${userName} (${userEmail})</span>`).show();
+        
+        // Clear search and hide results
+        $('#userSearch' + modalId).val('');
+        $('#userSearchResults' + modalId).hide();
+    });
+
+    // Hide search results when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.user-search-container').length) {
+            $('.search-results').hide();
+        }
+    });
+
+    // Clear selected user when modal is closed
+    $('#createPlanModal').on('hidden.bs.modal', function() {
+        $('#userSearch').val('');
+        $('#selectedUserId').val('');
+        $('#selectedUser').hide();
+        $('#userSearchResults').hide();
+    });
+
+    // Focus on search input when modal opens
+    $('#createPlanModal').on('shown.bs.modal', function() {
+        setTimeout(function() {
+            $('#userSearch').focus();
+        }, 300);
+    });
+});
+</script> 
