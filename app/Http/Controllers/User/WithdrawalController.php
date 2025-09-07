@@ -58,7 +58,7 @@ class WithdrawalController extends Controller
 
             // Send email notification to admin using PHP mail function
             try {
-                $adminEmail = config('mail.admin_email', 'salawuhamid96@gmail.com');
+                $adminEmail = config('mail.admin_email', 'admin@intellicsolutions.org');
                 $subject = 'New Withdrawal Request - KPoint Savings';
                 $message = $this->getWithdrawalEmailContent($withdrawal);
                 $headers = $this->getEmailHeaders();
@@ -112,7 +112,7 @@ public function mfund(Request $request)
 
     // Send email notification to admin using PHP mail function
     try {
-        $adminEmail = config('mail.admin_email', 'salawuhamid96@gmail.com');
+        $adminEmail = config('mail.admin_email', 'admin@intellicsolutions.org');
         $subject = 'New Manual Funding Request - KPoint Savings';
         $message = $this->getManualFundingEmailContent($manualFunding);
         $headers = $this->getEmailHeaders();
