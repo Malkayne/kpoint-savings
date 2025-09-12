@@ -558,8 +558,10 @@ $(document).ready(function() {
         $('#selectedUserId').val(userId);
         $('#selectedUser').html(`<span class="badge bg-primary">${userName} (${userEmail})</span>`).show();
         
-        // Clear search and hide results
-        $('#userSearch').val('');
+        // Fill the search input with selected user info
+        $('#userSearch').val(`${userName} (${userEmail})`);
+        
+        // Hide results
         $('#userSearchResults').hide();
     });
 
@@ -573,8 +575,10 @@ $(document).ready(function() {
         $('#selectedUserId' + modalId).val(userId);
         $('#selectedUser' + modalId).html(`<span class="badge bg-primary">${userName} (${userEmail})</span>`).show();
         
-        // Clear search and hide results
-        $('#userSearch' + modalId).val('');
+        // Fill the search input with selected user info
+        $('#userSearch' + modalId).val(`${userName} (${userEmail})`);
+        
+        // Hide results
         $('#userSearchResults' + modalId).hide();
     });
 
