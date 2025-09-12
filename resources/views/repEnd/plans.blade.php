@@ -319,9 +319,83 @@
                     <input type="text" class="form-control" id="userSearch" placeholder="Search users by name, email, username, or phone..." autocomplete="off" required>
                     <div id="userSearchResults" class="search-results"></div>
                     <input type="hidden" name="user_id" id="selectedUserId" required>
-                    <div id="selectedUser" class="selected-user mt-2" style="display: none;"></div>
                 </div>
             </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    let userSearch = document.getElementById('userSearch');
+                    let userSearchResults = document.getElementById('userSearchResults');
+                    let selectedUserId = document.getElementById('selectedUserId');
+                    let currentRequest = null;
+
+                    userSearch.addEventListener('input', function () {
+                        let query = this.value.trim();
+                        selectedUserId.value = '';
+                        if (query.length < 2) {
+                            userSearchResults.style.display = 'none';
+                            userSearchResults.innerHTML = '';
+                            return;
+                        }
+                        if (currentRequest) currentRequest.abort();
+                        currentRequest = new XMLHttpRequest();
+                        currentRequest.open('GET', '/rep/search-users?q=' + encodeURIComponent(query), true);
+                        currentRequest.onreadystatechange = function () {
+                            if (currentRequest.readyState === 4 && currentRequest.status === 200) {
+                                let users = JSON.parse(currentRequest.responseText);
+                                userSearchResults.innerHTML = '';
+                                if (users.length > 0) {
+                                    users.forEach(function (user) {
+                                        let div = document.createElement('div');
+                                        div.className = 'search-result-item';
+                                        div.textContent = user.name + ' (' + user.email + ')';
+                                        div.dataset.userId = user.id;
+                                        div.dataset.userName = user.name;
+                                        div.dataset.userEmail = user.email;
+                                        div.addEventListener('click', function () {
+                                            userSearch.value = user.name + ' (' + user.email + ')';
+                                            selectedUserId.value = user.id;
+                                            userSearchResults.style.display = 'none';
+                                            userSearchResults.innerHTML = '';
+                                            userSearch.readOnly = true;
+                                        });
+                                        userSearchResults.appendChild(div);
+                                    });
+                                    userSearchResults.style.display = 'block';
+                                } else {
+                                    userSearchResults.style.display = 'none';
+                                }
+                            }
+                        };
+                        currentRequest.send();
+                    });
+
+                    // Allow user to clear selection by focusing and pressing backspace/delete
+                    userSearch.addEventListener('focus', function () {
+                        if (userSearch.readOnly) {
+                            setTimeout(function () {
+                                userSearch.select();
+                            }, 10);
+                        }
+                    });
+                    userSearch.addEventListener('keydown', function (e) {
+                        if (userSearch.readOnly && (e.key === 'Backspace' || e.key === 'Delete')) {
+                            userSearch.value = '';
+                            selectedUserId.value = '';
+                            userSearch.readOnly = false;
+                            userSearchResults.style.display = 'none';
+                            userSearchResults.innerHTML = '';
+                            e.preventDefault();
+                        }
+                    });
+
+                    // Hide results if clicking outside
+                    document.addEventListener('click', function (e) {
+                        if (!userSearch.contains(e.target) && !userSearchResults.contains(e.target)) {
+                            userSearchResults.style.display = 'none';
+                        }
+                    });
+                });
+            </script>
             <div class="form-group">
                 <label>Title</label>
                 <input type="text" name="title" class="form-control" required>
