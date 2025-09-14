@@ -30,9 +30,9 @@ class DefaultController extends Controller
         $totalDebits = $transactions->where(['type'=>'debit','wallet_type'=>'user'])->sum('amount');
         
         // Get recent transactions
-        $recentTransactions = Transaction::where('user_id', $user->id)
-            ->with(['rep', 'plan'])
+        $recentTransactions = Transaction::where(['user_id', $user->id])
             ->where(['wallet_type'=>'user'])
+            ->with(['rep', 'plan'])
             ->orderBy('created_at', 'DESC')
             ->limit(5)
             ->get();
