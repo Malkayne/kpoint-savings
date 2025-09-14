@@ -10,11 +10,13 @@ use App\Models\Manager;
 use App\Models\Withdrawal;
 use App\Models\Manualfund;
 use App\Models\Transaction;
+use App\Models\AdminWallet;
 use Illuminate\Http\Request;
 use App\Models\pendTransactions;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class DefaultController extends Controller
 {
@@ -48,6 +50,10 @@ class DefaultController extends Controller
         $totalCredits = Transaction::where('type', 'credit')->sum('amount');
         $totalDebits = Transaction::where('type', 'debit')->sum('amount');
         $netFlow = $totalCredits - $totalDebits;
+        
+        // Admin wallet balance
+        $adminWallet = AdminWallet::where('admin_id', 1)->first();
+        $adminWalletBalance = $adminWallet ? $adminWallet->amount : 0;
         
         // Top performing reps
         $topReps = Rep::withCount('users')
@@ -111,6 +117,7 @@ class DefaultController extends Controller
             'totalCredits' => $totalCredits,
             'totalDebits' => $totalDebits,
             'netFlow' => $netFlow,
+            'adminWalletBalance' => $adminWalletBalance,
             'topReps' => $topReps,
             'recentTransactions' => $recentTransactions,
             'recentPlans' => $recentPlans,
@@ -679,6 +686,24 @@ if ($result['http_status'] != 201) {
         return view('adminend.usersWallet',['users' => $users,'title' => 'Wallets']);
     }
 
+    public function adminWallet(){
+        // Get admin wallet
+        $adminWallet = AdminWallet::where('admin_id', 1)->first();
+        $adminWalletBalance = $adminWallet ? $adminWallet->amount : 0;
+        
+        // Get admin transactions
+        $adminTransactions = Transaction::where('wallet_type', 'business')
+            ->with(['rep', 'plan'])
+            ->orderBy('created_at', 'DESC')
+            ->get();
+        
+        return view('adminend.adminWallet', [
+            'adminWalletBalance' => $adminWalletBalance,
+            'adminTransactions' => $adminTransactions,
+            'title' => 'Admin Wallet'
+        ]);
+    }
+
 
     public function DebitOrCreditUser($transType,User $userID){
 
@@ -974,9 +999,173 @@ public function deleteUser( User $user
     public function breakPlan($planId){
         $plan = \App\Models\ContributionPlan::find($planId);
         if($plan){
-            $plan->status = 'broken';
-            $plan->save();
-            return redirect()->back()->with('success', 'Plan has been broken successfully');
+            try {
+                DB::beginTransaction();
+                
+                $dailyContribution = $plan->amount;
+                $user = $plan->user;
+                $totalContributions = $plan->contributions()->sum('amount');
+                $remainingAmount = $totalContributions - $dailyContribution;
+                
+                $user->wallet_balance -= $totalContributions;
+                $user->save();
+                
+                $adminWallet = AdminWallet::firstOrCreate(
+                    ['admin_id' => 1],
+                    ['amount' => 0]
+                );
+                
+                $adminWallet->amount += $dailyContribution;
+                $adminWallet->save();
+                
+                if($remainingAmount > 0) {
+                    $userWallet = Wallet::firstOrCreate(
+                        ['user_id' => $user->id],
+                        ['amount' => 0]
+                    );
+               
+                    $userWallet->amount += $remainingAmount;
+                    $userWallet->save();
+                }
+                
+                Transaction::create([
+                    'user_id' => $user->id,
+                    'rep_id' => $plan->rep_id,
+                    'plan_id' => $plan->id,
+                    'wallet_type' => 'user',
+                    'type' => 'debit',
+                    'amount' => $dailyContribution,
+                    'description' => 'Plan break - one day contribution deducted for plan: ' . $plan->title,
+                ]);
+                
+                Transaction::create([
+                    'user_id' => $user->id,
+                    'rep_id' => $plan->rep_id,
+                    'plan_id' => $plan->id,
+                    'wallet_type' => 'business',
+                    'type' => 'credit',
+                    'amount' => $dailyContribution,
+                    'description' => 'Plan break - one day contribution received for plan: ' . $plan->title.' moved to admin wallet',
+                ]);
+                
+                if($remainingAmount > 0) {
+                    Transaction::create([
+                        'user_id' => $user->id,
+                        'rep_id' => $plan->rep_id,
+                        'plan_id' => $plan->id,
+                        'wallet_type' => 'user',
+                        'type' => 'credit',
+                        'amount' => $remainingAmount,
+                        'description' => 'Plan break - remaining contributions returned for plan: ' . $plan->title.' moved to user wallet',
+                    ]);
+                }
+                
+                $plan->status = 'broken';
+                $plan->save();
+                
+                DB::commit();
+                
+                $message = 'Plan has been broken successfully. ';
+                $message .= 'One day contribution (₦' . number_format($dailyContribution, 2) . ') transferred to admin wallet. ';
+                if($remainingAmount > 0) {
+                    $message .= 'Remaining amount (₦' . number_format($remainingAmount, 2) . ') credited to user wallet.';
+                } else {
+                    $message .= 'No remaining amount to refund.';
+                }
+                
+                return redirect()->back()->with('success', $message);
+                
+            } catch (\Exception $e) {
+                DB::rollback();
+                return redirect()->back()->with('error', 'An error occurred while breaking the plan. All changes have been rolled back.');
+            }
+        }
+        return redirect()->back()->with('error', 'Plan not found');
+    }
+
+    public function completePlan($planId){
+        $plan = \App\Models\ContributionPlan::find($planId);
+        if($plan){
+            try {
+                DB::beginTransaction();
+                
+                $dailyContribution = $plan->amount;
+                $user = $plan->user;
+                $totalContributions = $plan->contributions()->sum('amount');
+                $remainingAmount = $totalContributions - $dailyContribution;
+                
+                $user->wallet_balance -= $totalContributions;
+                $user->save();
+                
+                $adminWallet = AdminWallet::firstOrCreate(
+                    ['admin_id' => 1],
+                    ['amount' => 0]
+                );
+                
+                $adminWallet->amount += $dailyContribution;
+                $adminWallet->save();
+                
+                if($remainingAmount > 0) {
+                    $userWallet = Wallet::firstOrCreate(
+                        ['user_id' => $user->id],
+                        ['amount' => 0]
+                    );
+               
+                    $userWallet->amount += $remainingAmount;
+                    $userWallet->save();
+                }
+                
+                Transaction::create([
+                    'user_id' => $user->id,
+                    'rep_id' => $plan->rep_id,
+                    'plan_id' => $plan->id,
+                    'wallet_type' => 'user',
+                    'type' => 'debit',
+                    'amount' => $dailyContribution,
+                    'description' => 'Plan complete - one day contribution deducted for plan: ' . $plan->title,
+                ]);
+                
+                Transaction::create([
+                    'user_id' => $user->id,
+                    'rep_id' => $plan->rep_id,
+                    'plan_id' => $plan->id,
+                    'wallet_type' => 'business',
+                    'type' => 'credit',
+                    'amount' => $dailyContribution,
+                    'description' => 'Plan complete - one day contribution received for plan: ' . $plan->title.' moved to admin wallet',
+                ]);
+                
+                if($remainingAmount > 0) {
+                    Transaction::create([
+                        'user_id' => $user->id,
+                        'rep_id' => $plan->rep_id,
+                        'plan_id' => $plan->id,
+                        'wallet_type' => 'user',
+                        'type' => 'credit',
+                        'amount' => $remainingAmount,
+                        'description' => 'Plan complete - remaining contributions returned for plan: ' . $plan->title.' moved to user wallet',
+                    ]);
+                }
+                
+                $plan->status = 'completed';
+                $plan->save();
+                
+                DB::commit();
+                
+                $message = 'Plan has been completed successfully. ';
+                $message .= 'One day contribution (₦' . number_format($dailyContribution, 2) . ') transferred to admin wallet. ';
+                if($remainingAmount > 0) {
+                    $message .= 'Remaining amount (₦' . number_format($remainingAmount, 2) . ') credited to user wallet.';
+                } else {
+                    $message .= 'No remaining amount to refund.';
+                }
+                
+                return redirect()->back()->with('success', $message);
+                
+            } catch (\Exception $e) {
+                DB::rollback();
+                return redirect()->back()->with('error', 'An error occurred while completing the plan. All changes have been rolled back.');
+            }
         }
         return redirect()->back()->with('error', 'Plan not found');
     }

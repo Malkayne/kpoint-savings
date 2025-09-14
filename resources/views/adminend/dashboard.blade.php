@@ -10,6 +10,51 @@
             <div class="row row-cols-1">
                 <div class="overflow-hidden d-slider1 ">
                     <ul class="p-0 m-0 mb-2 swiper-wrapper list-inline">
+
+
+                    <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="2050">
+                            <div class="card-body">
+                                <div class="progress-widget">
+                                    <div class="text-center circle-progress-01 circle-progress circle-progress-warning">
+                                        <i class="bi bi-coins fs-2 text-warning"></i>
+                                    </div>
+                                    <div class="progress-detail">
+                                        <p class="mb-2">Admin Wallet</p>
+                                        <h4 class="counter">₦{{ number_format($adminWalletBalance,2) }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                    <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="1900">
+                            <div class="card-body">
+                                <div class="progress-widget">
+                                    <div class="text-center circle-progress-01 circle-progress circle-progress-info">
+                                        <i class="bi bi-cash-coin fs-2 text-info"></i>
+                                    </div>
+                                    <div class="progress-detail">
+                                        <p class="mb-2">Net Flow</p>
+                                        <h4 class="counter">₦{{ number_format($netFlow,2) }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="2000">
+                            <div class="card-body">
+                                <div class="progress-widget">
+                                    <div class="text-center circle-progress-01 circle-progress circle-progress-primary">
+                                        <i class="bi bi-wallet2 fs-2 text-primary"></i>
+                                    </div>
+                                    <div class="progress-detail">
+                                        <p class="mb-2">Total Wallet</p>
+                                        <h4 class="counter">₦{{ number_format($totalWallet,2) }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                       
+
                         <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="600">
                             <div class="card-body">
                                 <div class="progress-widget">
@@ -179,32 +224,7 @@
                                 </div>
                             </div>
                         </li>
-                        <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="1900">
-                            <div class="card-body">
-                                <div class="progress-widget">
-                                    <div class="text-center circle-progress-01 circle-progress circle-progress-info">
-                                        <i class="bi bi-cash-coin fs-2 text-info"></i>
-                                    </div>
-                                    <div class="progress-detail">
-                                        <p class="mb-2">Net Flow</p>
-                                        <h4 class="counter">₦{{ number_format($netFlow,2) }}</h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="2000">
-                            <div class="card-body">
-                                <div class="progress-widget">
-                                    <div class="text-center circle-progress-01 circle-progress circle-progress-primary">
-                                        <i class="bi bi-wallet2 fs-2 text-primary"></i>
-                                    </div>
-                                    <div class="progress-detail">
-                                        <p class="mb-2">Total Wallet</p>
-                                        <h4 class="counter">₦{{ number_format($totalWallet,2) }}</h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
+                   
                         <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="2100">
                             <div class="card-body">
                                 <div class="progress-widget">

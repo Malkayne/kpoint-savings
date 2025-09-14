@@ -393,6 +393,7 @@ Route::group([
     
     //general 
     Route::get('wallet','DefaultController@usersWallet')->name('usersWallet');
+    Route::get('adminWallet','DefaultController@adminWallet')->name('adminWallet');
     Route::get('accUsers','DefaultController@accUsers')->name('accUsers');
     Route::post('updateUserWallet/{transType}/{userID}','DefaultController@updateUserWallet')->name('updateUserWallet');
     

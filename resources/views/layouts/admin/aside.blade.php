@@ -69,6 +69,13 @@
                         <span class="item-name">Users Wallet</span>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('admin.adminWallet') }}" class="nav-link {{ Request::is('admin/adminWallet') ? 'active' : '' }}">
+                        <i class="nav-icon fa fa-coins"></i>
+                        <span class="item-name">Admin Wallet</span>
+                    </a>
+                </li>
                 
                 
                 <li class="nav-item">

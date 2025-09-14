@@ -197,12 +197,14 @@
                                                 <a href="{{ route('rep.planDetails', ['plan' => $plan->id]) }}" class="btn btn-sm btn-info" title="View Details">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
+                                                @if($plan->status === 'active')
                                                 <button type="button" class="btn btn-sm btn-primary" title="Edit" data-bs-toggle="modal" data-bs-target="#editPlanModal{{ $plan->id }}">
                                                     <i class="fa fa-edit"></i>
                                                 </button>
                                                 <button type="button" class="btn btn-sm btn-danger" title="Delete" data-bs-toggle="modal" data-bs-target="#deletePlanModal{{ $plan->id }}">
                                                     <i class="fa fa-trash"></i>
                                                 </button>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach

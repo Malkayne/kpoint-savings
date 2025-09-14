@@ -36,4 +36,12 @@ class Admin extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get the admin wallet
+     */
+    public function wallet()
+    {
+        return $this->hasOne(AdminWallet::class);
+    }
 }

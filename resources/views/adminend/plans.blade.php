@@ -305,6 +305,7 @@
                                                             <li><a class="dropdown-item" href="#" onclick="changePlanStatus({{ $plan->id }}, 'active')">
                                                                 <i class="fa fa-play text-success"></i> Set Active
                                                             </a></li>
+                                                            @if($plan->status === 'active')
                                                             <li><a class="dropdown-item" href="#" onclick="changePlanStatus({{ $plan->id }}, 'completed')">
                                                                 <i class="fa fa-check text-info"></i> Mark Completed
                                                             </a></li>
@@ -315,6 +316,7 @@
                                                             <li><a class="dropdown-item text-danger" href="#" onclick="deletePlan({{ $plan->id }}, '{{ $plan->title }}')">
                                                                 <i class="fa fa-trash"></i> Delete Plan
                                                             </a></li>
+                                                            @endif
                                                         </ul>
                                                     </div>
                                                 </div>

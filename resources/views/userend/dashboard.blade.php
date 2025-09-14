@@ -10,6 +10,22 @@
             <div class="row row-cols-1">
                 <div class="overflow-hidden d-slider1 ">
                     <ul class="p-0 m-0 mb-2 swiper-wrapper list-inline">
+
+                    <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="700">
+                            <div class="card-body">
+                                <div class="progress-widget">
+                                    <div class="text-center circle-progress-01 circle-progress circle-progress-primary">
+                                        <i class="bi bi-wallet2 fs-2 text-primary"></i>
+                                    </div>
+                                    <div class="progress-detail">
+                                        <p class="mb-2">Total Savings Balance</p>
+                                        <h4 class="counter">₦{{ number_format($user->wallet_balance,2) }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+
                         <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="700">
                             <div class="card-body">
                                 <div class="progress-widget">
@@ -17,8 +33,8 @@
                                         <i class="bi bi-wallet2 fs-2 text-primary"></i>
                                     </div>
                                     <div class="progress-detail">
-                                        <p class="mb-2">Wallet Balance</p>
-                                        <h4 class="counter">₦{{ number_format($user->wallet_balance,2) }}</h4>
+                                        <p class="mb-2">Total Wallet Balance</p>
+                                        <h4 class="counter">₦{{ number_format($user->wallet->amount?$user->wallet->amount:0,2) }}</h4>
                                     </div>
                                 </div>
                             </div>

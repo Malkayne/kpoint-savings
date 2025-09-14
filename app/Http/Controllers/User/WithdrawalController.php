@@ -25,7 +25,17 @@ class WithdrawalController extends Controller
          public function store(Request $request)
         {
             $request->validate([
-                'amount' => 'required|numeric|min:100',
+                'amount' => [
+                    'required',
+                    'numeric',
+                    'min:100',
+                    function ($attribute, $value, $fail) {
+                        $user = Auth::user();
+                        if (!$user || $value > $user->wallet->amount?$user->wallet->amount:0) {
+                            $fail('You do not have sufficient wallet balance for this withdrawal. Your current balance is ₦' . number_format($user && $user->wallet ? $user->wallet->amount : 0, 2) . '.');
+                        }
+                    }
+                ],
                 'bank_name' => 'required|string|max:255',
                 'account_number' => 'required|string|max:20',
                 'account_name' => 'required|string|max:50',
