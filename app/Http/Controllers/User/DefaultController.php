@@ -24,10 +24,10 @@ class DefaultController extends Controller
         $totalPlans = $plans->count();
         
         // Get user's transactions
-        $transactions = Transaction::where('user_id', $user->id)->get();
+        $transactions = Transaction::where(['user_id'=>$user->id,'wallet_type'=>'user'])->get();
         $totalTransactions = $transactions->count();
-        $totalCredits = $transactions->where(['type'=>'credit','wallet_type'=>'user'])->sum('amount');
-        $totalDebits = $transactions->where(['type'=>'debit','wallet_type'=>'user'])->sum('amount');
+        $totalCredits = $transactions->where('type','credit')->sum('amount');
+        $totalDebits = $transactions->where('type','debit')->sum('amount');
         
         // Get recent transactions
         $recentTransactions = Transaction::where(['user_id'=>$user->id,'wallet_type'=>'user'])
