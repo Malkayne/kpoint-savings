@@ -34,7 +34,7 @@
                                     </div>
                                     <div class="progress-detail">
                                         <p class="mb-2">Total Wallet Balance</p>
-                                        <h4 class="counter">₦{{ number_format($user->wallet->amount?$user->wallet->amount:0,2) }}</h4>
+                                        <h4 class="counter">₦{{ number_format($user->wallet?$user->wallet->amount:0,2) }}</h4>
                                     </div>
                                 </div>
                             </div>
