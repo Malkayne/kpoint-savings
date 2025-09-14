@@ -26,12 +26,13 @@ class DefaultController extends Controller
         // Get user's transactions
         $transactions = Transaction::where('user_id', $user->id)->get();
         $totalTransactions = $transactions->count();
-        $totalCredits = $transactions->where('type', 'credit')->sum('amount');
-        $totalDebits = $transactions->where('type', 'debit')->sum('amount');
+        $totalCredits = $transactions->where(['type'=>'credit','wallet_type'=>'user'])->sum('amount');
+        $totalDebits = $transactions->where(['type'=>'debit','wallet_type'=>'user'])->sum('amount');
         
         // Get recent transactions
         $recentTransactions = Transaction::where('user_id', $user->id)
             ->with(['rep', 'plan'])
+            ->where(['wallet_type'=>'user'])
             ->orderBy('created_at', 'DESC')
             ->limit(5)
             ->get();
@@ -53,6 +54,7 @@ class DefaultController extends Controller
             'user' => $user,
             'activePlans' => $activePlans,
             'completedPlans' => $completedPlans,
+            'brokenPlans' => $brokenPlans,
             'totalPlans' => $totalPlans,
             'totalTransactions' => $totalTransactions,
             'totalCredits' => $totalCredits,
