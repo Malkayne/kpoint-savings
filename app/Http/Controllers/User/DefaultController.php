@@ -20,6 +20,7 @@ class DefaultController extends Controller
         $plans = ContributionPlan::where('user_id', $user->id)->get();
         $activePlans = $plans->where('status', 'active')->count();
         $completedPlans = $plans->where('status', 'completed')->count();
+        $brokenPlans = $plans->where('status', 'broken')->count();
         $totalPlans = $plans->count();
         
         // Get user's transactions

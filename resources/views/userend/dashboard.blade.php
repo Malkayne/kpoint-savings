@@ -52,6 +52,19 @@
                                 </div>
                             </div>
                         </li>
+                        <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="800">
+                            <div class="card-body">
+                                <div class="progress-widget">
+                                    <div class="text-center circle-progress-01 circle-progress circle-progress-info">
+                                        <i class="bi bi-graph-up-arrow fs-2 text-info"></i>
+                                    </div>
+                                    <div class="progress-detail">
+                                        <p class="mb-2">Broken Plans</p>
+                                        <h4 class="counter">{{ $brokenPlans }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
                         <li class="swiper-slide card card-slide" data-aos="fade-up" data-aos-delay="900">
                             <div class="card-body">
                                 <div class="progress-widget">
