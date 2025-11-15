@@ -1,4 +1,4 @@
-@extends('layouts.users.app')
+@extends('layouts.admin.app')
 @section('title', 'Plan Details')
 @section('content-header', 'Plan Details')
 @section('content-header-description', 'View detailed information about your contribution plan')
