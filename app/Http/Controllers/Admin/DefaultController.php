@@ -391,13 +391,113 @@ if ($result['http_status'] != 201) {
         $users = $rep->users;
         $contributionPlans = $rep->contributionPlans;
         $transactions = Transaction::where('rep_id', $rep->id)->orderBy('created_at', 'DESC')->get();
+
+        // Calculate Metrics
+        $today = now()->startOfDay();
+        $thisWeek = now()->startOfWeek();
+        $thisMonth = now()->startOfMonth();
+
+        $dailyEarnings = Transaction::where('rep_id', $rep->id)
+            ->where('type', 'credit')
+            ->where('created_at', '>=', $today)
+            ->sum('amount');
+
+        $weeklyEarnings = Transaction::where('rep_id', $rep->id)
+            ->where('type', 'credit')
+            ->where('created_at', '>=', $thisWeek)
+            ->sum('amount');
+
+        $monthlyEarnings = Transaction::where('rep_id', $rep->id)
+            ->where('type', 'credit')
+            ->where('created_at', '>=', $thisMonth)
+            ->sum('amount');
+
+        // Plan status counts
+        $activePlansCount = $contributionPlans->where('status', 'active')->count();
+        $completedPlansCount = $contributionPlans->where('status', 'completed')->count();
+        $brokenPlansCount = $contributionPlans->where('status', 'broken')->count();
+
+        // Multi-timeframe performance data
         
+        // 1. Daily (Last 30 days)
+        $dailyPerformance = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $revenue = Transaction::where('rep_id', $rep->id)
+                ->where('type', 'credit')
+                ->whereDate('created_at', $date->toDateString())
+                ->sum('amount');
+            $dailyPerformance[] = ['label' => $date->format('d M'), 'value' => $revenue];
+        }
+
+        // 2. Weekly (Last 8 weeks)
+        $weeklyPerformance = [];
+        for ($i = 7; $i >= 0; $i--) {
+            $start = now()->subWeeks($i)->startOfWeek();
+            $end = now()->subWeeks($i)->endOfWeek();
+            $revenue = Transaction::where('rep_id', $rep->id)
+                ->where('type', 'credit')
+                ->whereBetween('created_at', [$start, $end])
+                ->sum('amount');
+            $weeklyPerformance[] = ['label' => 'Week ' . $start->format('W'), 'value' => $revenue];
+        }
+
+        // 3. Monthly (Last 12 months)
+        $monthlyPerformance = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $month = now()->subMonths($i);
+            $revenue = Transaction::where('rep_id', $rep->id)
+                ->where('type', 'credit')
+                ->whereYear('created_at', $month->year)
+                ->whereMonth('created_at', $month->month)
+                ->sum('amount');
+            $monthlyPerformance[] = ['label' => $month->format('M Y'), 'value' => $revenue];
+        }
+
+        // 4. Yearly (Last 5 years)
+        $yearlyPerformance = [];
+        for ($i = 4; $i >= 0; $i--) {
+            $year = now()->subYears($i)->year;
+            $revenue = Transaction::where('rep_id', $rep->id)
+                ->where('type', 'credit')
+                ->whereYear('created_at', $year)
+                ->sum('amount');
+            $yearlyPerformance[] = ['label' => (string)$year, 'value' => $revenue];
+        }
+
         return view('adminend.repDetails', [
             'title' => 'Rep Details',
             'rep' => $rep,
             'users' => $users,
             'contributionPlans' => $contributionPlans,
-            'transactions' => $transactions
+            'transactions' => $transactions,
+            'metrics' => [
+                'daily_earnings' => $dailyEarnings,
+                'weekly_earnings' => $weeklyEarnings,
+                'monthly_earnings' => $monthlyEarnings,
+                'active_plans' => $activePlansCount,
+                'completed_plans' => $completedPlansCount,
+                'broken_plans' => $brokenPlansCount,
+                'total_revenue' => $transactions->where('type', 'credit')->sum('amount')
+            ],
+            'chartData' => [
+                'daily' => [
+                    'labels' => array_column($dailyPerformance, 'label'),
+                    'data' => array_column($dailyPerformance, 'value')
+                ],
+                'weekly' => [
+                    'labels' => array_column($weeklyPerformance, 'label'),
+                    'data' => array_column($weeklyPerformance, 'value')
+                ],
+                'monthly' => [
+                    'labels' => array_column($monthlyPerformance, 'label'),
+                    'data' => array_column($monthlyPerformance, 'value')
+                ],
+                'yearly' => [
+                    'labels' => array_column($yearlyPerformance, 'label'),
+                    'data' => array_column($yearlyPerformance, 'value')
+                ]
+            ]
         ]);
     }
     
