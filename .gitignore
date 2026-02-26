@@ -68,3 +68,6 @@ Thumbs.db
 # Custom
 /tests/Traits/AuthenticatesUsers.php
 /rr
+
+# DB
+intepkvx_kpoint_newdb.sql
