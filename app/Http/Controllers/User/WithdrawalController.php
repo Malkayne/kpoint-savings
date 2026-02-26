@@ -31,7 +31,7 @@ class WithdrawalController extends Controller
                     'min:100',
                     function ($attribute, $value, $fail) {
                         $user = Auth::user();
-                        if (!$user || $value > $user->wallet->amount?$user->wallet->amount:0) {
+                    if (!$user || $value > ($user->wallet->amount ?? 0)) {
                             $fail('You do not have sufficient wallet balance for this withdrawal. Your current balance is ₦' . number_format($user && $user->wallet ? $user->wallet->amount : 0, 2) . '.');
                         }
                     }
