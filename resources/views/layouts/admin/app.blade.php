@@ -23,6 +23,7 @@
   </head>
 
   <body class="  ">
+    @include('partials.ghost-banner')
     <!-- loader Start -->
     <div id="loading">
       <div class="loader simple-loader">

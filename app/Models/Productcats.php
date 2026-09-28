@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOrganisation;
 use Illuminate\Database\Eloquent\Model;
 
 class Productcats extends Model
 {
+    use BelongsToOrganisation;
 
     protected $guarded = [];
 

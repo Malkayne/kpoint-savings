@@ -22,14 +22,27 @@ class SmylController extends Controller
     }
 
     public function editProfile(User $user){
+      if ((int) $user->id !== (int) Auth::id()) {
+          abort(403);
+      }
 
       return view('smyl.editProfile',['userDetails'=> $user,'title'=>'Update Profile']);
 
     }
 
     public function updateProfile(Request $request,User $userID){
+        if ((int) $userID->id !== (int) Auth::id()) {
+            abort(403);
+        }
 
-        $userID->update($request->all());
+        $userID->update($request->except([
+            'org_id',
+            'wallet_balance',
+            'password',
+            'rep_id',
+            'is_lock',
+            'status',
+        ]));
 
       return redirect(route('smyl.profile'))->with('success','Your Profile has been Successfully updated');
 

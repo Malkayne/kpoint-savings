@@ -64,6 +64,9 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'Userlock' => \App\Http\Middleware\Userlock::class,
         'Replock' => \App\Http\Middleware\Replock::class,
+        'resolve.tenant' => \App\Http\Middleware\ResolveTenant::class,
+        'admin.or.ghost' => \App\Http\Middleware\AllowAdminOrGhost::class,
+        'superadmin' => \App\Http\Middleware\EnsureSuperadmin::class,
         '503' => \App\Http\Middleware\RedirectTo503::class,
     ];
 
@@ -78,6 +81,9 @@ class Kernel extends HttpKernel
         \Illuminate\Session\Middleware\StartSession::class,
         \Illuminate\View\Middleware\ShareErrorsFromSession::class,
         \App\Http\Middleware\Authenticate::class,
+        \App\Http\Middleware\AllowAdminOrGhost::class,
+        \App\Http\Middleware\EnsureSuperadmin::class,
+        \App\Http\Middleware\ResolveTenant::class,
         \Illuminate\Routing\Middleware\ThrottleRequests::class,
         \Illuminate\Session\Middleware\AuthenticateSession::class,
         \Illuminate\Routing\Middleware\SubstituteBindings::class,

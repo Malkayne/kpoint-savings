@@ -56,6 +56,19 @@ class LoginController extends Controller
           );
       }
 
+      protected function authenticated(Request $request, $user)
+      {
+          if (!org_is_active($user->org_id)) {
+              $this->guard()->logout();
+
+              return redirect()->back()->withErrors([
+                  $this->username() => 'This organisation is not active.',
+              ]);
+          }
+
+          $request->session()->forget(['acting_org_id', 'acting_as_superadmin']);
+      }
+
 
        public function showLoginForm()
        {

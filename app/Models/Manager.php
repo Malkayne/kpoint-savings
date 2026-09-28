@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOrganisation;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class Manager extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, BelongsToOrganisation;
 
     /**
      * The attributes that are mass assignable.
@@ -16,7 +17,7 @@ class Manager extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email','role','username','password'
+        'org_id', 'name', 'email','role','username','password'
     ];
 
     /**

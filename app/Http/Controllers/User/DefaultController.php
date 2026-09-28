@@ -113,7 +113,19 @@ class DefaultController extends Controller
             'nok_relationship' => 'required|string|max:50',
         ]);
 
-        $user->update($request->all());
+        $user->update($request->only([
+            'name',
+            'username',
+            'email',
+            'phone',
+            'profession',
+            'education',
+            'address',
+            'dob',
+            'nok_name',
+            'nok_phone',
+            'nok_relationship',
+        ]));
 
         return redirect(route('userend.profile'))->with('success', 'Your Profile has been Successfully updated');
     }

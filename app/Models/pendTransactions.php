@@ -3,12 +3,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOrganisation;
 use Illuminate\Database\Eloquent\Model;
 
 class pendTransactions extends Model
 {
-    //
-    
+    use BelongsToOrganisation;
+
         protected $table = 'pendTrans';
 
       protected $guarded = [];

@@ -62,6 +62,16 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
+            if (!org_is_active($user->org_id)) {
+                Auth::logout();
+
+                return back()->withErrors([
+                    'username' => 'This organisation is not active.',
+                ]);
+            }
+
+            $request->session()->forget(['acting_org_id', 'acting_as_superadmin']);
+
             return redirect($this->redirectTo)
                 ->with('success', 'Welcome back, ' . $user->name . '!');
         }

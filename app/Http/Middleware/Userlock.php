@@ -16,12 +16,17 @@ class Userlock
      */
     public function handle($request, Closure $next)
     {
-        $user = Auth::user('user');
-        
-        if($user->status == 'inactive'){
-            Auth::logout();
-            return redirect('/login')->with('error','Account suspended, contact admin or rep to unlock account');
+        $user = Auth::guard('web')->user();
+
+        if (!$user) {
+            return redirect('/login');
         }
+
+        if ($user->status == 'inactive') {
+            Auth::guard('web')->logout();
+            return redirect('/login')->with('error', 'Account suspended, contact admin or rep to unlock account');
+        }
+
         return $next($request);
     }
 }

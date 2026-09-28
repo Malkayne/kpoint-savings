@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOrganisation;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class Rep extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, BelongsToOrganisation;
     protected $table = 'reps';
     
     /**
@@ -17,7 +18,7 @@ class Rep extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'phone', 'username', 'password', 'wallet_balance', 'status', 'image'
+        'org_id', 'name', 'email', 'phone', 'username', 'password', 'wallet_balance', 'status', 'image'
     ];
 
     /**

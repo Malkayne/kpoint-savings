@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOrganisation;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    use BelongsToOrganisation;
     // use Notifiable;
 
     /**
@@ -16,6 +18,7 @@ class User extends Authenticatable
      */
     protected $table = 'users';
     protected $fillable = [
+        'org_id',
         'name',
         'username',
         'email',
@@ -57,6 +60,25 @@ class User extends Authenticatable
         'wallet_balance' => 'float',
         'rep_id' => 'integer',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($user) {
+            if (!$user->isDirty('rep_id') || !$user->rep_id) {
+                return;
+            }
+
+            if (!app(\App\Services\TenantContext::class)->isResolved()) {
+                return;
+            }
+
+            if (!Rep::where('id', $user->rep_id)->exists()) {
+                $user->rep_id = $user->getOriginal('rep_id');
+            }
+        });
+    }
 
     // Relationships
 

@@ -14,6 +14,7 @@ use App\Models\AdminWallet;
 use Illuminate\Http\Request;
 use App\Models\pendTransactions;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +53,7 @@ class DefaultController extends Controller
         $netFlow = $totalCredits - $totalDebits;
         
         // Admin wallet balance
-        $adminWallet = AdminWallet::where('admin_id', 1)->first();
+        $adminWallet = AdminWallet::where('org_id', current_org_id())->first();
         $adminWalletBalance = $adminWallet ? $adminWallet->amount : 0;
         
         // Top performing reps
@@ -60,6 +61,7 @@ class DefaultController extends Controller
             ->addSelect([
                 'users_sum_wallet_balance' => \App\Models\User::selectRaw('COALESCE(SUM(wallet_balance),0)')
                     ->whereColumn('rep_id', 'reps.id')
+                    ->where('org_id', current_org_id())
             ])
             ->orderByDesc('users_count')
             ->orderByDesc('users_sum_wallet_balance')
@@ -294,7 +296,7 @@ if ($result['http_status'] != 201) {
 
      }
 
-      $userID->update($request->all());
+      $userID->update($request->except(['org_id', 'wallet_balance', 'password', 'is_lock']));
   return redirect(route('admin.users'))->with('success',$message);
 
 }
@@ -513,10 +515,12 @@ if ($result['http_status'] != 201) {
             return response()->json([]);
         }
         
-        $users = User::where('name', 'LIKE', "%{$query}%")
-                    ->orWhere('email', 'LIKE', "%{$query}%")
-                    ->orWhere('username', 'LIKE', "%{$query}%")
-                    ->orWhere('phone', 'LIKE', "%{$query}%")
+        $users = User::where(function ($q) use ($query) {
+                        $q->where('name', 'LIKE', "%{$query}%")
+                            ->orWhere('email', 'LIKE', "%{$query}%")
+                            ->orWhere('username', 'LIKE', "%{$query}%")
+                            ->orWhere('phone', 'LIKE', "%{$query}%");
+                    })
                     ->limit(5)
                     ->get(['id', 'name', 'email', 'username', 'phone']);
         
@@ -561,7 +565,11 @@ if ($result['http_status'] != 201) {
     public function updateRepProfile(Request $request,Rep $repID){
 
         $mssg = $request->name."'s"." profile has been updated";
-      if(  $repID->update($request->all()) ){
+      $data = $request->except(['org_id', 'wallet_balance', 'password', 'password_confirmation', 'is_lock']);
+      if ($request->filled('password')) {
+          $data['password'] = Hash::make($request->password);
+      }
+      if(  $repID->update($data) ){
       return redirect(route('admin.reps'))->with('success',$mssg);
     }else{
       return redirect(route('admin.reps'))->with('error','Something went wrong,please try again');
@@ -701,7 +709,11 @@ if ($result['http_status'] != 201) {
     public function updateManagerProfile(Request $request,Manager $managerID){
 
         $mssg = $request->name."'s"." profile has been updated";
-      if(  $managerID->update($request->all()) ){
+      $data = $request->except(['org_id', 'wallet_balance', 'password', 'password_confirmation', 'is_lock']);
+      if ($request->filled('password')) {
+          $data['password'] = Hash::make($request->password);
+      }
+      if(  $managerID->update($data) ){
       return redirect(route('admin.managers'))->with('success',$mssg);
     }else{
       return redirect(route('admin.managers'))->with('error','Something went wrong,please try again');
@@ -764,7 +776,7 @@ if ($result['http_status'] != 201) {
 
     public function updateProfile(Request $request,Admin $adminID){
 
-        $adminID->update($request->all());
+        $adminID->update($request->only(['name', 'email', 'username']));
       return redirect(route('admin.profile'))->with('success','Your Profile has been Successfully updated');
 
 }
@@ -788,7 +800,7 @@ if ($result['http_status'] != 201) {
 
     public function adminWallet(){
         // Get admin wallet
-        $adminWallet = AdminWallet::where('admin_id', 1)->first();
+        $adminWallet = AdminWallet::where('org_id', current_org_id())->first();
         $adminWalletBalance = $adminWallet ? $adminWallet->amount : 0;
         
         // Get admin transactions
@@ -818,8 +830,13 @@ if ($result['http_status'] != 201) {
     }
     
             public function PUsertransactions($userID){
+            $user = User::find($userID);
 
-            $Ptransactions = pendTransactions::where('user_id',$userID)->get();
+            if (!$user) {
+                abort(404);
+            }
+
+            $Ptransactions = pendTransactions::where('user_id', $user->id)->get();
             return view('adminend.PUsertransactions',['Ptransactions' => $Ptransactions,'title' => 'Pending User Credits','userID'=>$userID]);
     }
     
@@ -1090,8 +1107,8 @@ public function deleteUser( User $user
         ]);
     }
 
-    public function planDetails($plan){ 
-        $plan = \App\Models\ContributionPlan::find($plan);
+    public function planDetails($plan){
+        $plan = \App\Models\ContributionPlan::findOrFail($plan);
         $plan->load(['rep', 'contributions']);
         return view('adminend.planDetails', ['title' => 'Plan Details', 'plan' => $plan]);
     }
@@ -1110,10 +1127,7 @@ public function deleteUser( User $user
                 $user->wallet_balance -= $totalContributions;
                 $user->save();
                 
-                $adminWallet = AdminWallet::firstOrCreate(
-                    ['admin_id' => 1],
-                    ['amount' => 0]
-                );
+                $adminWallet = $this->orgAdminWallet();
                 
                 $adminWallet->amount += $dailyContribution;
                 $adminWallet->save();
@@ -1197,10 +1211,7 @@ public function deleteUser( User $user
                 $user->wallet_balance -= $totalContributions;
                 $user->save();
                 
-                $adminWallet = AdminWallet::firstOrCreate(
-                    ['admin_id' => 1],
-                    ['amount' => 0]
-                );
+                $adminWallet = $this->orgAdminWallet();
                 
                 $adminWallet->amount += $dailyContribution;
                 $adminWallet->save();
@@ -1331,6 +1342,27 @@ public function deleteUser( User $user
         $manualfund->save();
         
         return redirect()->back()->with('success', 'Manual funding status updated successfully.');
+    }
+
+    /**
+     * Treasury wallet for the organisation currently in context.
+     * Ghost mode has no admin guard user, so fall back to that org's admin.
+     *
+     * @return \App\Models\AdminWallet
+     */
+    protected function orgAdminWallet()
+    {
+        $orgId = current_org_id();
+        $adminId = Auth::guard('admin')->id();
+
+        if (!$adminId && $orgId) {
+            $adminId = Admin::where('org_id', $orgId)->value('id');
+        }
+
+        return AdminWallet::firstOrCreate(
+            ['org_id' => $orgId],
+            ['admin_id' => $adminId, 'amount' => 0]
+        );
     }
 
 }

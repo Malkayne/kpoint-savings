@@ -86,7 +86,7 @@ Route::match(['get', 'post'], '/logout', 'Auth\LoginController@logout')->name('l
 Route::group([
   'prefix'=>'/userend',
   'as' => 'userend.',
-  'middleware'=> ['auth', 'Userlock'],
+  'middleware'=> ['auth', 'Userlock', 'resolve.tenant:web'],
 ], function(){
     // die('count down in progress');
     Route::get('dashboard', 'User\DefaultController@index')->name('dashboard');
@@ -130,7 +130,7 @@ Route::group([
   })->name('login');
 
   Route::group([
-    'middleware'=> ['auth','Userlock']
+    'middleware'=> ['auth','Userlock', 'resolve.tenant:web']
   ],function(){
     //   die('count down in progress');
     Route::get('dashboard','Account\SmylController@index')->name('dashboard');
@@ -186,7 +186,7 @@ Route::group([
     Route::post('logout','Auth\LoginController@logout')->name('repLogout');
 
   Route::group([
-    'middleware'=> ['auth:rep','Replock' ]
+    'middleware'=> ['auth:rep','Replock', 'resolve.tenant:rep']
   ],function(){
     Route::get('dashboard','DefaultController@index')->name('dashboard');
     Route::get('users','DefaultController@users')->name('users');
@@ -248,7 +248,7 @@ Route::group([
      Route::post('logout','Auth\LoginController@logout')->name('adminLogout');
 
   Route::group([
-    'middleware'=> 'auth:manager'
+    'middleware'=> ['auth:manager', 'resolve.tenant:manager']
   ],function(){
     Route::get('dashboard','DefaultController@index')->name('dashboard');
     Route::get('profile','DefaultController@profile')->name('profile');
@@ -316,7 +316,7 @@ Route::group([
      Route::post('logout','Auth\LoginController@logout')->name('adminLogout');
 
   Route::group([
-    'middleware'=> 'auth:admin'
+    'middleware'=> ['admin.or.ghost', 'resolve.tenant:admin']
   ],function(){
     Route::get('dashboard','DefaultController@index')->name('dashboard');
     
@@ -428,6 +428,34 @@ Route::group([
     
     });
 
+});
+
+// SUPERADMIN ROUTES
+Route::group([
+    'prefix' => '/superadmin',
+    'as' => 'superadmin.',
+    'namespace' => 'Superadmin',
+], function () {
+    Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
+    Route::post('login', 'Auth\LoginController@login')->name('loginPost');
+
+    Route::group(['middleware' => 'superadmin'], function () {
+        Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+
+        Route::get('dashboard', 'DefaultController@index')->name('dashboard');
+
+        Route::get('organisations', 'OrganisationController@index')->name('orgs');
+        Route::get('organisations/create', 'OrganisationController@create')->name('orgs.create');
+        Route::post('organisations', 'OrganisationController@store')->name('orgs.store');
+        Route::get('organisations/{org}', 'OrganisationController@show')->name('orgs.show');
+        Route::get('organisations/{org}/edit', 'OrganisationController@edit')->name('orgs.edit');
+        Route::put('organisations/{org}', 'OrganisationController@update')->name('orgs.update');
+        Route::post('organisations/{org}/suspend', 'OrganisationController@suspend')->name('orgs.suspend');
+        Route::post('organisations/{org}/activate', 'OrganisationController@activate')->name('orgs.activate');
+
+        Route::post('organisations/{org}/enter', 'OrganisationController@enterOrg')->name('enter-org');
+        Route::get('exit-org', 'OrganisationController@exitOrg')->name('exit-org');
+    });
 });
 
 
