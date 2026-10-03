@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOrganisation;
 use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
 {
+    use BelongsToOrganisation;
+
     protected $table = 'transactions';
 
     protected $fillable = [
+        'org_id',
         'user_id',
         'rep_id',
         'plan_id',

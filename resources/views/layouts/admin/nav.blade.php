@@ -115,8 +115,14 @@
           <a class="py-0 nav-link d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <img src="{{ asset('assets/images/avatars/01.png') }}" alt="User-Profile" class="img-fluid avatar avatar-50 avatar-rounded">
             <div class="caption ms-3 d-none d-md-block ">
-                <h6 class="mb-0 caption-title">{{ Auth::user()->name }}</h6>
-                <p class="mb-0 caption-sub-title">{{ Auth::user()->username }}</p>
+                @php
+                    $navAccount = Auth::guard('admin')->user();
+                    if (!$navAccount && Auth::check()) {
+                        $navAccount = Auth::user();
+                    }
+                @endphp
+                <h6 class="mb-0 caption-title">{{ $navAccount ? $navAccount->name : 'Superadmin' }}</h6>
+                <p class="mb-0 caption-sub-title">{{ $navAccount ? $navAccount->username : 'Ghost mode' }}</p>
             </div>
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">

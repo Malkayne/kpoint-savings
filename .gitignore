@@ -71,3 +71,5 @@ Thumbs.db
 
 # DB
 intepkvx_kpoint_newdb.sql
+/backups/
+doc/

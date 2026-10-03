@@ -59,6 +59,10 @@ return [
             'driver' => 'session',
             'provider' => 'reps',
         ],
+        'superadmin' => [
+            'driver' => 'session',
+            'provider' => 'superadmins',
+        ],
     ],
 
     /*
@@ -94,7 +98,11 @@ return [
         'reps' => [
             'driver' => 'eloquent',
           'model' => App\Models\Rep::class,
-        ]
+        ],
+        'superadmins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Superadmin::class,
+        ],
 
         // 'users' => [
         //     'driver' => 'database',

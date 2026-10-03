@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Models\Organisation;
 use App\Models\Withdrawal;
 use App\Models\Manualfund;
 use App\Mail\NewWithdrawalRequest;
@@ -71,7 +72,7 @@ class WithdrawalController extends Controller
 
             // Send email notification to admin using Laravel Mail
             try {
-                $adminEmail = config('mail.admin_email', 'kpointsavings@gmail.com');
+                $adminEmail = $this->orgAdminEmail();
                 $user = Auth::user();
                 
                 Mail::to($adminEmail)->send(new NewWithdrawalRequest($withdrawal, $user));
@@ -123,7 +124,7 @@ public function mfund(Request $request)
 
     // Send email notification to admin using Laravel Mail
     try {
-        $adminEmail = config('mail.admin_email', 'kpointsavings@gmail.com');
+        $adminEmail = $this->orgAdminEmail();
         $user = Auth::user();
         
         Mail::to($adminEmail)->send(new NewManualFundingRequest($manualFunding, $user));
@@ -134,4 +135,27 @@ public function mfund(Request $request)
 
     return redirect()->back()->with('success', 'Manual funding request submitted successfully.');
 }
+
+    /**
+     * Current org contact email, falling back to the shared config address.
+     *
+     * @return string
+     */
+    protected function orgAdminEmail()
+    {
+        $fallback = config('mail.admin_email', 'kpointsavings@gmail.com');
+        $orgId = current_org_id();
+
+        if (!$orgId) {
+            return $fallback;
+        }
+
+        $org = Organisation::find($orgId);
+
+        if ($org && $org->email) {
+            return $org->email;
+        }
+
+        return $fallback;
+    }
 }

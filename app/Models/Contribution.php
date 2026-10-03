@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToOrganisation;
 use Illuminate\Database\Eloquent\Model;
 
 class Contribution extends Model
 {
+    use BelongsToOrganisation;
+
     protected $table = 'contributions';
 
     protected $fillable = [
+        'org_id',
         'plan_id',
         'amount',
         'contributed_on'

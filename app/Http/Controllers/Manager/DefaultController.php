@@ -158,9 +158,11 @@ if ($result['http_status'] != 201) {
             return response()->json([]);
         }
         
-        $users = User::where('name', 'LIKE', "%{$query}%")
-                    ->orWhere('email', 'LIKE', "%{$query}%")
-                    ->orWhere('username', 'LIKE', "%{$query}%")
+        $users = User::where(function ($q) use ($query) {
+                        $q->where('name', 'LIKE', "%{$query}%")
+                            ->orWhere('email', 'LIKE', "%{$query}%")
+                            ->orWhere('username', 'LIKE', "%{$query}%");
+                    })
                     ->limit(5)
                     ->get(['id', 'name', 'email', 'username']);
         
@@ -213,7 +215,11 @@ if ($result['http_status'] != 201) {
     public function updateRepProfile(Request $request,Rep $repID){
 
         $mssg = $request->name."'s"." profile has been updated";
-      if(  $repID->update($request->all()) ){
+      $data = $request->except(['org_id', 'wallet_balance', 'password', 'password_confirmation', 'is_lock']);
+      if ($request->filled('password')) {
+          $data['password'] = Hash::make($request->password);
+      }
+      if(  $repID->update($data) ){
       return redirect(route('manager.reps'))->with('success',$mssg);
     }else{
       return redirect(route('manager.reps'))->with('error','Something went wrong,please try again');
@@ -316,7 +322,7 @@ public function updateUserProfile(Request $request,User $userID){
 
      }
 
-      $userID->update($request->all());
+      $userID->update($request->except(['org_id', 'wallet_balance', 'password', 'is_lock']));
   return redirect(route('manager.users'))->with('success',$message);
 
 }
@@ -396,7 +402,11 @@ private function updateRepsms($name,$accNum,$repName,$repNumb){
 
     public function updateProfile(Request $request,Manager $adminID){
 
-        $adminID->update($request->all());
+        $data = $request->except(['org_id', 'wallet_balance', 'password', 'password_confirmation', 'is_lock']);
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+        $adminID->update($data);
       return redirect(route('manager.profile'))->with('success','Your Profile has been Successfully updated');
 
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Rep;
+use App\Models\Wallet;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -25,24 +26,29 @@ class RegisterController extends Controller
     // Generate unique account number
     protected function accNumGen()
     {
-        $serialCode = 100;
+        $serialCode = '100';
         $year = date('Y');
-        $lastUser = User::latest()->first();
-        if ($lastUser !== null) {
-            $scode = $lastUser->accNum;
-            $SNcode = substr($scode, 7, 9);
+        $lastUser = User::withoutTenantScope()->orderBy('id', 'desc')->first();
+
+        if ($lastUser !== null && $lastUser->accNum) {
+            $serial = substr($lastUser->accNum, 7);
         } else {
-            $SNcode = '040';
+            $serial = '040';
         }
-        $accCode = $SNcode + 1;
-        $accNum = $serialCode . $year . $accCode;
+
+        $accCode = (int) $serial;
+
+        do {
+            $accCode++;
+            $accNum = $serialCode.$year.$accCode;
+        } while (User::withoutTenantScope()->where('accNum', $accNum)->exists());
+
         return $accNum;
     }
 
     public function showRegistrationForm()
     {
-        $reps = Rep::where('status', 'active')->get();
-        return view('auth.register', ['refs' => $reps]);
+        return view('auth.register');
     }
 
     public function register(Request $request)
@@ -61,7 +67,7 @@ class RegisterController extends Controller
             'nok_phone' => 'required|string|max:20',
             'nok_relationship' => 'required|string|max:50',
             'password' => 'required|string|confirmed',
-            'rep_id' => 'required|integer|exists:reps,id',
+            'rep_username' => 'required|string|max:50',
             'signature' => 'required|file',
             'profile_pix' => 'required|file'
         ]);
@@ -69,6 +75,17 @@ class RegisterController extends Controller
         // die('Registration is currently disabled. lollllllllll');
 
         $accNum = $this->accNumGen();
+
+        $rep = Rep::withoutTenantScope()
+            ->where('username', $request->rep_username)
+            ->where('status', 'active')
+            ->first();
+
+        if (!$rep || !org_is_active($rep->org_id)) {
+            return back()->withErrors([
+                'rep_username' => 'Referral code is not valid.',
+            ])->withInput();
+        }
         
         
             $upload_dir = 'public/Images/Signatures/';
@@ -115,14 +132,21 @@ class RegisterController extends Controller
             'nok_phone' => $request->nok_phone,
             'nok_relationship' => $request->nok_relationship,
             'password' => Hash::make($request->password),
-            'rep_id' => $request->rep_id,
+            'rep_id' => $rep->id,
+            'org_id' => $rep->org_id,
             'signature' => $image_link,
             'profile_pix'  => $profileImageName
         ];
 
-        $user = User::create($userData);
+        $user = User::withoutTenantScope()->create($userData);
 
         if ($user) {
+            Wallet::withoutTenantScope()->create([
+                'org_id' => $rep->org_id,
+                'user_id' => $user->id,
+                'amount' => 0,
+            ]);
+
             auth()->login($user);
             return redirect($this->redirectTo);
         } else {

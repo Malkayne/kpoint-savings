@@ -212,7 +212,7 @@ public function updateUserProfile(Request $request,User $userID){
         $this->updateUsersms($name,$request->accNum,$request->phoneNumber);
      }
 
-      $userID->update($request->all());
+      $userID->update($request->except(['org_id', 'wallet_balance', 'password', 'is_lock']));
   return redirect(route('rep.users'))->with('success',$message);
 
 }

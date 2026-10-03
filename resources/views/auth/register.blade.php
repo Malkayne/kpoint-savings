@@ -85,15 +85,8 @@
 
             <div class="col-md-6 mb-3">
               <div class="form-group">
-              <select class="form-control form-control-lg form-control-a @error('rep_id') is-invalid @enderror" name="rep_id" autocomplete="referral" required>
-                <option selected disabled>Select Referral</option>
-                @foreach($refs as $ref)
-                <option value="{{ $ref->id }}" {{ old('rep_id') == $ref->id ? 'selected' : '' }}>
-                  {{ $ref->name }} ({{ $ref->username }})
-                </option>
-                @endforeach
-              </select>
-              @error('rep_id')
+              <input id="rep_username" type="text" class="form-control form-control-lg form-control-a @error('rep_username') is-invalid @enderror" placeholder="Referral code" name="rep_username" value="{{ old('rep_username') }}" required autocomplete="off">
+              @error('rep_username')
               <span class="invalid-feedback" role="alert">
                 <strong>{{ $message }}</strong>
               </span>
