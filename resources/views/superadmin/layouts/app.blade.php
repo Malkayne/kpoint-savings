@@ -1,34 +1,134 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" dir="ltr" data-bs-theme="light" data-bs-theme-color="theme-color-default">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Superadmin') | KPoint</title>
-    <link href="/adminVendor/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/adminVendor/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@yield('title', 'Platform') | KPoint</title>
+    <link rel="shortcut icon" href="{{ asset('./assets/images/small-logo.png') }}">
+    <link rel="stylesheet" href="{{ asset('./assets/css/core/libs.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('./assets/css/hope-ui.min.css?v=5.0.0') }}">
+    <link rel="stylesheet" href="{{ asset('./assets/css/custom.min.css?v=5.0.0') }}">
+    <link rel="stylesheet" href="{{ asset('./assets/css/customizer.min.css?v=5.0.0') }}">
+    <script src="https://kit.fontawesome.com/87567a16b5.js" crossorigin="anonymous"></script>
 </head>
-<body class="bg-light">
-    @include('partials.ghost-banner')
-    <nav class="navbar navbar-dark bg-dark mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="{{ route('superadmin.dashboard') }}">KPoint platform</a>
-            <div>
-                <a class="btn btn-sm btn-outline-light" href="{{ route('superadmin.orgs') }}">Organisations</a>
-                <form action="{{ route('superadmin.logout') }}" method="POST" class="d-inline">
-                    @csrf
-                    <button type="submit" class="btn btn-sm btn-outline-warning">Logout</button>
-                </form>
+<body>
+    <aside class="sidebar sidebar-default sidebar-white sidebar-base navs-rounded-all">
+        <div class="sidebar-header d-flex align-items-center justify-content-start">
+            <a href="{{ route('superadmin.dashboard') }}" class="navbar-brand">
+                <div class="logo-main">
+                    <div class="logo-normal">
+                        <img src="{{ asset('./assets/images/small-logo.png') }}" style="width:30px" class="img-fluid" alt="KPoint">
+                    </div>
+                </div>
+                <h4 class="logo-title">KPOINT</h4>
+            </a>
+            <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
+                <i class="icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4.25 12.2744L19.25 12.2744" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M10.2998 18.2988L4.2498 12.2748L10.2998 6.24976" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </i>
             </div>
         </div>
-    </nav>
-    <div class="container pb-5">
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-        @if(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
-        @yield('content')
-    </div>
+        <div class="sidebar-body pt-0 data-scrollbar">
+            <div class="sidebar-list">
+                <ul class="navbar-nav iq-main-menu" id="sidebar-menu">
+                    <li class="nav-item static-item">
+                        <a class="nav-link static-item disabled" href="#" tabindex="-1">
+                            <span class="default-icon">Platform</span>
+                            <span class="mini-icon">P</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('superadmin.dashboard') }}" class="nav-link {{ Request::is('superadmin/dashboard') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <span class="item-name">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('superadmin.orgs') }}" class="nav-link {{ (Request::is('superadmin/organisations') || (Request::is('superadmin/organisations/*') && !Request::is('superadmin/organisations/create'))) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-building"></i>
+                            <span class="item-name">Organisations</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('superadmin.orgs.create') }}" class="nav-link {{ Request::is('superadmin/organisations/create') ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-plus-circle"></i>
+                            <span class="item-name">New organisation</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <form action="{{ route('superadmin.logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="nav-link border-0 bg-transparent w-100 text-start">
+                                <i class="nav-icon fas fa-sign-out-alt"></i>
+                                <span class="item-name">Logout</span>
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="position-relative iq-banner">
+            <nav class="nav navbar navbar-expand-xl navbar-light iq-navbar">
+                <div class="container-fluid navbar-inner">
+                    <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
+                        <i class="icon">
+                            <svg width="20" class="icon-20" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z" />
+                            </svg>
+                        </i>
+                    </div>
+                    <h4 class="mb-0 ms-2">Platform</h4>
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item">
+                            <span class="badge bg-primary">Superadmin</span>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="iq-navbar-header" style="height: 215px;">
+                <div class="container-fluid iq-container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div>
+                                    <h1>@yield('content-header', 'Platform')</h1>
+                                    <p>@yield('content-header-description')</p>
+                                </div>
+                                @yield('header-action')
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="iq-header-img">
+                    <img src="{{ asset('./assets/images/dashboard/top-header.jpg') }}" alt="header" class="theme-color-default-img img-fluid w-100 h-100 animated-scaleX">
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid content-inner mt-n5 py-0">
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+            @yield('content')
+        </div>
+    </main>
+
+    <script src="{{ asset('./assets/js/core/libs.min.js') }}"></script>
+    <script src="{{ asset('./assets/js/hope-ui.js') }}" defer></script>
 </body>
 </html>
