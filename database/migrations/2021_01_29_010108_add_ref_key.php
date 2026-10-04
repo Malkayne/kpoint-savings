@@ -13,9 +13,12 @@ class AddRefKey extends Migration
      */
     public function up()
     {
+        if (Schema::hasColumn('transactions', 'refKey') || Schema::hasColumn('transactions', 'description')) {
+            return;
+        }
+
         Schema::table('transactions', function (Blueprint $table) {
           $table->string('refKey',128);
-            //
         });
     }
 

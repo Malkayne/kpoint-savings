@@ -13,12 +13,16 @@ class CreateAdminWalletsTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasTable('admin_wallets')) {
+            return;
+        }
+
         Schema::create('admin_wallets', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('admin_id');
+            $table->bigIncrements('id');
+            $table->integer('admin_id');
             $table->decimal('amount', 15, 2)->default(0);
             $table->timestamps();
-            
+
             $table->foreign('admin_id')->references('id')->on('admins')->onDelete('cascade');
         });
     }

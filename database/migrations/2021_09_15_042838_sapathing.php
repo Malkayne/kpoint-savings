@@ -13,6 +13,23 @@ class Sapathing extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('pendTrans')) {
+            Schema::create('pendTrans', function (Blueprint $table) {
+                $table->bigIncrements('id');
+                $table->unsignedBigInteger('user_id');
+                $table->unsignedBigInteger('amount');
+                $table->string('transType', 455);
+                $table->unsignedBigInteger('rep_id')->nullable();
+                $table->timestamps();
+            });
+
+            return;
+        }
+
+        if (Schema::hasColumn('pendTrans', 'rep_id')) {
+            return;
+        }
+
         Schema::table('pendTrans', function (Blueprint $table) {
            $table->unsignedBigInteger('rep_id')->nullable();
           $table->foreign('rep_id')->references('id')->on('reps')->onDelete('cascade');

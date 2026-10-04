@@ -13,6 +13,10 @@ class Newthingup21 extends Migration
      */
     public function up()
     {
+        if (Schema::hasColumn('users', 'address')) {
+            return;
+        }
+
         Schema::table('users', function (Blueprint $table) {
            $table->text('address')->nullable();
         });

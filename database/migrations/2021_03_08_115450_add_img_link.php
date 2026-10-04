@@ -13,9 +13,11 @@ class AddImgLink extends Migration
      */
     public function up()
     {
+        if (Schema::hasColumn('users', 'imgLink') || Schema::hasColumn('users', 'name')) {
+            return;
+        }
+
         Schema::table('users', function (Blueprint $table) {
-            //
-            
               $table->text('imgLink')->nullable();
         });
     }

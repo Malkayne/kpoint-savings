@@ -13,6 +13,10 @@ class AddNaradddytess extends Migration
      */
     public function up()
     {
+        if (Schema::hasColumn('transactions', 'narration') || Schema::hasColumn('transactions', 'description')) {
+            return;
+        }
+
         Schema::table('transactions', function (Blueprint $table) {
            $table->text('narration')->nullable();
         });
