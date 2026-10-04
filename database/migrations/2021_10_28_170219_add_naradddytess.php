@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddNaradddytess extends Migration
+class CreateWithdrawalsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,14 @@ class AddNaradddytess extends Migration
      */
     public function up()
     {
-           Schema::create('withdrawals', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        if (Schema::hasTable('withdrawals')) {
+            return;
+        }
+
+        Schema::create('withdrawals', function (Blueprint $table) {
+            $table->engine = 'MyISAM';
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')->index();
             $table->decimal('amount', 15, 2);
             $table->string('bank_name');
             $table->string('account_number');

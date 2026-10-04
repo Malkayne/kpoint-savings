@@ -13,6 +13,10 @@ class AddStatusToManualFundingRequestsTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('manual_funding_requests') || Schema::hasColumn('manual_funding_requests', 'status')) {
+            return;
+        }
+
         Schema::table('manual_funding_requests', function (Blueprint $table) {
             $table->enum('status', ['pending', 'ongoing', 'done', 'reversed', 'failed'])->default('pending')->after('proof_of_payment');
         });

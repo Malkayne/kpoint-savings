@@ -13,9 +13,12 @@ class UpdateTransactionTable extends Migration
      */
     public function up()
     {
+        if (Schema::hasColumn('transactions', 'created_at')) {
+            return;
+        }
+
         Schema::table('transactions', function (Blueprint $table) {
           $table->timestamps();
-            //
         });
     }
 

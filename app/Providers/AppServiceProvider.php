@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Organisation;
 use App\Services\TenantContext;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -29,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Schema::defaultStringLength(191);
+
         View::composer('*', function ($view) {
             $isSuperadmin = false;
             $actingOrgId = null;
