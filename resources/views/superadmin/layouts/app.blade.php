@@ -9,7 +9,20 @@
     <link rel="stylesheet" href="{{ asset('./assets/css/hope-ui.min.css?v=5.0.0') }}">
     <link rel="stylesheet" href="{{ asset('./assets/css/custom.min.css?v=5.0.0') }}">
     <link rel="stylesheet" href="{{ asset('./assets/css/customizer.min.css?v=5.0.0') }}">
+    <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <script src="https://kit.fontawesome.com/87567a16b5.js" crossorigin="anonymous"></script>
+    <style>
+        .iq-navbar-header .iq-container { position: relative; z-index: 2; }
+        .iq-navbar-header h1 { font-size: 1.75rem; line-height: 1.2; margin-bottom: .35rem; }
+        .iq-navbar-header p { max-width: 42rem; margin-bottom: 0; }
+        .content-inner { padding-bottom: 2rem; }
+        .sa-gap { margin-bottom: 1.5rem; }
+        .content-inner .row.g-4 {
+            --bs-gutter-x: 1.5rem;
+            --bs-gutter-y: 1.5rem;
+        }
+    </style>
 </head>
 <body>
     <aside class="sidebar sidebar-default sidebar-white sidebar-base navs-rounded-all">
@@ -129,6 +142,33 @@
     </main>
 
     <script src="{{ asset('./assets/js/core/libs.min.js') }}"></script>
-    <script src="{{ asset('./assets/js/hope-ui.js') }}" defer></script>
+    <script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="{{ asset('./assets/js/hope-ui.js') }}"></script>
+    <script>
+        (function () {
+            if (window.jQuery && jQuery.fn.DataTable) {
+                jQuery('[data-toggle="data-table"]').each(function () {
+                    if (!jQuery.fn.DataTable.isDataTable(this)) {
+                        jQuery(this).DataTable({
+                            dom: '<"row align-items-center"<"col-md-6" l><"col-md-6" f>><"table-responsive border-bottom my-3" rt><"row align-items-center" <"col-md-6" i><"col-md-6" p>><"clear">'
+                        });
+                    }
+                });
+            }
+            if (window.bootstrap && bootstrap.Tooltip) {
+                document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+                    try {
+                        if (!bootstrap.Tooltip.getInstance(el)) {
+                            new bootstrap.Tooltip(el);
+                        }
+                    } catch (e) {}
+                });
+            }
+        })();
+    </script>
+    @stack('scripts')
 </body>
 </html>

@@ -28,7 +28,7 @@ class OrganisationController extends Controller
             'admins' => function ($query) {
                 $query->withoutGlobalScope(OrganisationScope::class);
             },
-        ])->paginate(20);
+        ])->orderBy('name')->get();
 
         return view('superadmin.orgs.index', compact('orgs'));
     }
